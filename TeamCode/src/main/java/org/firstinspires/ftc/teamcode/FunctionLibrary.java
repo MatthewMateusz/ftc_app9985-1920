@@ -112,16 +112,16 @@ abstract public class FunctionLibrary  extends LinearOpMode {
 
     class servo {
         public void vertical() {
-            hardware.servo_frontLeft.setPosition(0);
-            hardware.servo_frontRight.setPosition(1);
-            hardware.servo_rearLeft.setPosition(0);
-            hardware.servo_rearRight.setPosition(1);
+            hardware.servo_frontLeft.setPosition(1);
+            hardware.servo_frontRight.setPosition(0);
+            hardware.servo_rearLeft.setPosition(1);
+            hardware.servo_rearRight.setPosition(0);
 
-            frontLeft = motorOrientation.forward;
-            frontRight = motorOrientation.reverse;
-            rearLeft = motorOrientation.forward;
-            rearRight = motorOrientation.reverse;
-            sleep(min_delay * 5);
+            frontLeft = motorOrientation.reverse;
+            frontRight = motorOrientation.forward;
+            rearLeft = motorOrientation.reverse;
+            rearRight = motorOrientation.forward;
+            sleep(min_delay * 6);
         }
 
         public void horizontal() {
@@ -130,11 +130,11 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             hardware.servo_rearLeft.setPosition(0.5);
             hardware.servo_rearRight.setPosition(0.5);
 
-            frontLeft = motorOrientation.reverse;
+            frontLeft = motorOrientation.forward;
             frontRight = motorOrientation.forward;
-            rearLeft = motorOrientation.reverse;
+            rearLeft = motorOrientation.forward;
             rearRight = motorOrientation.forward;
-            sleep(min_delay * 5);
+            sleep(min_delay * 6);
         }
     }
 
@@ -174,17 +174,29 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                 //Set the targets
 
 
-                hardware.motor_rearLeft.setTargetPosition(newRearLeftTarget);
-                hardware.motor_frontLeft.setTargetPosition(newFrontLeftTarget);
-                if (rearLeft.equals(motorOrientation.reverse)) {
-                    hardware.motor_rearRight.setTargetPosition(newRearRightTarget);
+                if (frontLeft.equals(motorOrientation.forward)) {
+                    hardware.motor_frontLeft.setTargetPosition(newFrontLeftTarget);
+                } else {
+                    hardware.motor_frontLeft.setTargetPosition(-newFrontLeftTarget);
+                }
+
+                if (frontRight.equals(motorOrientation.forward)) {
                     hardware.motor_frontRight.setTargetPosition(newFrontRightTarget);
                 } else {
-                    hardware.motor_rearRight.setTargetPosition(-newRearRightTarget);
                     hardware.motor_frontRight.setTargetPosition(-newFrontRightTarget);
                 }
 
+                if (rearLeft.equals(motorOrientation.forward)) {
+                    hardware.motor_rearLeft.setTargetPosition(newRearLeftTarget);
+                } else {
+                    hardware.motor_rearLeft.setTargetPosition(-newRearLeftTarget);
+                }
 
+                if (rearRight.equals(motorOrientation.forward)) {
+                    hardware.motor_rearRight.setTargetPosition(newRearRightTarget);
+                } else {
+                    hardware.motor_rearRight.setTargetPosition(-newRearRightTarget);
+                }
 
                 //Set the mode on encoders to run to position
                 hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -240,10 +252,10 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             runtime.reset();
-            hardware.motor_frontLeft.setPower(speed);
-            hardware.motor_frontRight.setPower(-speed);
-            hardware.motor_rearLeft.setPower(speed);
-            hardware.motor_rearRight.setPower(-speed);
+            hardware.motor_frontLeft.setPower(-speed);
+            hardware.motor_frontRight.setPower(speed);
+            hardware.motor_rearLeft.setPower(-speed);
+            hardware.motor_rearRight.setPower(speed);
             while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(touchsensor)) {
                 telemetry.addData("touchy: ", "%b", touchsensor.getState());
                 telemetry.update();
@@ -266,10 +278,10 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             runtime.reset();
-            hardware.motor_frontLeft.setPower(speed);
-            hardware.motor_frontRight.setPower(-speed);
-            hardware.motor_rearLeft.setPower(speed);
-            hardware.motor_rearRight.setPower(-speed);
+            hardware.motor_frontLeft.setPower(-speed);
+            hardware.motor_frontRight.setPower(speed);
+            hardware.motor_rearLeft.setPower(-speed);
+            hardware.motor_rearRight.setPower(speed);
             while (opModeIsActive() && runtime.seconds() <= timeout && hardware.pressed(touchsensor)) {
                 telemetry.addData("touchy: ", "%b", touchsensor.getState());
                 telemetry.update();
