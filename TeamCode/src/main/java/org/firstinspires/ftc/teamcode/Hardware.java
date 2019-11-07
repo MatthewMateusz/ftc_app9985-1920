@@ -67,10 +67,10 @@ public class Hardware {
         armMotorRotate = setupMotor(hwMap,"armMotorRotate", forwardDirection, brakeZero);
         armMotorLift = setupMotor(hwMap,"armMotorLift",forwardDirection,brakeZero);
 
-        servo_frontLeft = setupServo(hwMap, "servo_frontLeft", initPosition);
-        servo_frontRight = setupServo(hwMap, "servo_frontRight", initPosition);
-        servo_rearLeft = setupServo(hwMap, "servo_rearLeft", initPosition);
-        servo_rearRight = setupServo(hwMap, "servo_rearRight", initPosition);
+        servo_frontLeft = setupServo(hwMap, "servo_frontLeft", 1);
+        servo_frontRight = setupServo(hwMap, "servo_frontRight", 0);
+        servo_rearLeft = setupServo(hwMap, "servo_rearLeft", 1);
+        servo_rearRight = setupServo(hwMap, "servo_rearRight", 0);
         armServoBottom = setupContinuousServo(hwMap,"armServoTop",0.03);
         armServoTop = setupContinuousServo(hwMap,"armServoTop",0.03);
 
