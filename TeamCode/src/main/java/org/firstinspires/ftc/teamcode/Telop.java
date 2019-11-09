@@ -28,7 +28,7 @@ public class Telop extends OpMode {
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "You got this my Teddy Brosevelt"); //
+        telemetry.addData("Say", "No one out pizzas the hut, good luck"); //
     }
 
     /*
@@ -112,7 +112,7 @@ public class Telop extends OpMode {
 
         //}
         //else {
-        
+
         robot.motor_frontLeft.setPower(leftFrontSpeed);
         robot.motor_frontRight.setPower(rightFrontSpeed);
         robot.motor_rearLeft.setPower(leftRearSpeed);
@@ -141,31 +141,35 @@ public class Telop extends OpMode {
         if (gamepad2.y) {
             robot.armServoTop.setPower(.03);
             robot.armServoBottom.setPower(.03);
+
         }
         else if (gamepad2.b){
             robot.armServoTop.setPower(-1);
             robot.armServoBottom.setPower(-1);
+
         }
         else if (gamepad2.a){
             robot.armServoTop.setPower(1);
             robot.armServoBottom.setPower(1);
+
         }
 
 
 
         //Moves front servos
         //if (gamepad2.dpad_left)
-          //  servoOffsetH += servoSpeedH;
+        //  servoOffsetH += servoSpeedH;
         //else if (gamepad2.dpad_right)
-          //  servoOffsetH -= servoSpeedH;
+        //  servoOffsetH -= servoSpeedH;
         //if (gamepad2.dpad_up)
-          //  servoOffsetV += servoSpeedV;
+        //  servoOffsetV += servoSpeedV;
         //else if (gamepad2.dpad_down)
-            //servoOffsetV -= servoSpeedV;
+        //servoOffsetV -= servoSpeedV;
 
         // Move both servos to new position.  Assume servos are mirror image of each other.
         servoOffsetH = Range.clip(servoOffsetH, -0.5, 0.5);
         servoOffsetV = Range.clip(servoOffsetV, -.5, 0.5);
+
         //robot.grabberVertServo.setPosition(robot.steeringstriaght - servoOffset);
 //}
 
@@ -173,7 +177,10 @@ public class Telop extends OpMode {
         // telemetry.addData("vert Servo",  "position = %.2f",robot.steeringstriaght + servoOffsetV);
         telemetry.addData("Servo Offset H","Offset H = %.2f", servoOffsetH);
         telemetry.addData("Servo Offset V","Offset V = %.2f", servoOffsetV);
+        telemetry.addData("Bottom Servo","Bottom Servo = %.2f",robot.armServoBottom.getPower());
+        telemetry.addData("Top Servo","Top Servo = %.2f",robot.armServoTop.getPower());
         //telemetry.addData("left",  "%.2f", left);
+        telemetry.update();
 
     }
 
