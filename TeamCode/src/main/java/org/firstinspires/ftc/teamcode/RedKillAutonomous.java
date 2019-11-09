@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="testing", group="testing")
-public class TestAutonomous extends FunctionLibrary {
+@Autonomous(name="Red Kamikaze", group="The Real Deal")
+public class RedKillAutonomous extends FunctionLibrary {
 
     @Override
     public void runOpMode() throws InterruptedException {
