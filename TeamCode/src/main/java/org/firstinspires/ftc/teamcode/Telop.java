@@ -124,7 +124,7 @@ public class Telop extends OpMode {
         //robot.servo_frontRight.setPosition(-.5*gamepad1.right_stick_x+.5);
 
         if (!robot.pressed(robot.armLimitLiftUp) && gamepad2.dpad_up)
-            robot.armMotorLift.setPower(.25);
+            robot.armMotorLift.setPower(.35);
         else if (!robot.pressed(robot.armLimitLiftDown) && gamepad2.dpad_down)
             robot.armMotorLift.setPower(-.1);
         else
@@ -140,17 +140,17 @@ public class Telop extends OpMode {
 
         if (gamepad2.y) {
             robot.armServoTop.setPower(.03);
-            robot.armServoBottom.setPower(.03);
+            //robot.armServoBottom.setPower(.03);
 
         }
         else if (gamepad2.b){
             robot.armServoTop.setPower(-1);
-            robot.armServoBottom.setPower(-1);
+            //robot.armServoBottom.setPower(-1);
 
         }
         else if (gamepad2.a){
             robot.armServoTop.setPower(1);
-            robot.armServoBottom.setPower(1);
+            //robot.armServoBottom.setPower(1);
 
         }
 
