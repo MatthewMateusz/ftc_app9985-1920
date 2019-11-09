@@ -10,7 +10,7 @@ public class CalibrateHardware extends FunctionLibrary {
 
         setupHardware();
         waitForStart();
-        servo.horizontal();
+        horizontal();
 
         while (opModeIsActive()) {
             idle();

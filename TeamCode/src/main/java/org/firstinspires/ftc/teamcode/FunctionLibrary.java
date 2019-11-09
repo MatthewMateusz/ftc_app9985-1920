@@ -6,21 +6,27 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 abstract public class FunctionLibrary  extends LinearOpMode {
 
     //Variables ...
 
+
+
+
+
+
     enum motorOrientation {
         forward,
         reverse
     }
 
-    motorOrientation frontLeft = motorOrientation.forward;
-    motorOrientation frontRight = motorOrientation.forward;
-    motorOrientation rearLeft = motorOrientation.forward;
-    motorOrientation rearRight = motorOrientation.forward;
+    motorOrientation frontLeft;
+    motorOrientation frontRight;
+    motorOrientation rearLeft;
+    motorOrientation rearRight;
 
 
     //NeveRest 40 Gearbox
@@ -50,8 +56,6 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     Hardware hardware = new Hardware();
-    servo servo = new servo();
-    motor motor = new motor();
 
     //Setups the hardware for the hardware
     void setupHardware() {
@@ -65,10 +69,69 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         }
     }
 
+    public void forwardOnTime(double speed, double time) {
+        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        runtime.reset();
+        hardware.motor_frontLeft.setPower(speed);
+        hardware.motor_frontRight.setPower(-speed);
+        hardware.motor_rearLeft.setPower(speed);
+        hardware.motor_rearRight.setPower(-speed);
+        while (opModeIsActive() && runtime.seconds() <= time) {
+            idle();
+        }
+        hardware.motor_frontLeft.setPower(0);
+        hardware.motor_frontRight.setPower(0);
+        hardware.motor_rearLeft.setPower(0);
+        hardware.motor_rearRight.setPower(0);
+        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sleep(min_delay);
+    }
+
+    public void horizontalOnTime(double speed, double time) {
+        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        runtime.reset();
+        hardware.motor_frontLeft.setPower(speed);
+        hardware.motor_frontRight.setPower(speed);
+        hardware.motor_rearLeft.setPower(speed);
+        hardware.motor_rearRight.setPower(speed);
+        while (opModeIsActive() && runtime.seconds() <= time) {
+            idle();
+        }
+        hardware.motor_frontLeft.setPower(0);
+        hardware.motor_frontRight.setPower(0);
+        hardware.motor_rearLeft.setPower(0);
+        hardware.motor_rearRight.setPower(0);
+        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sleep(min_delay);
+    }
+
+
     public void rotateArmTime(double timeout) {
         hardware.armMotorRotate.setPower(-speed_half);
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(hardware.armLimitRotateUp)) {
+            idle();
+        }
+        hardware.armMotorRotate.setPower(0);
+        sleep(min_delay);
+    }
+
+    public void DrotateArmTime(double timeout) {
+        hardware.armMotorRotate.setPower(speed_half);
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(hardware.armLimitRotateDown)) {
             idle();
         }
         hardware.armMotorRotate.setPower(0);
@@ -85,16 +148,31 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         sleep(min_delay);
     }
 
-    public void BackUP_stop(double speed, double timeout) {
+    public void lowerArmTime (double timeout) {
+        hardware.armMotorLift.setPower(-speed_slow);
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(hardware.armLimitLiftDown)) {
+            idle();
+        }
+        hardware.armMotorLift.setPower(0);
+        sleep(min_delay);
+    }
+
+    public void BackUP_stop(double speed, double timeout, double angle) {
         hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.servo_frontLeft.setPosition(angle);
+        hardware.servo_frontRight.setPosition(angle);
+        hardware.servo_rearLeft.setPosition(angle);
+        hardware.servo_rearRight.setPosition(angle);
+        sleep(500);
         runtime.reset();
         hardware.motor_frontLeft.setPower(speed);
-        hardware.motor_frontRight.setPower(-speed);
+        hardware.motor_frontRight.setPower(speed);
         hardware.motor_rearLeft.setPower(speed);
-        hardware.motor_rearRight.setPower(-speed);
+        hardware.motor_rearRight.setPower(speed);
         while (opModeIsActive() && runtime.seconds() <= timeout && hardware.backDistance.getDistance(DistanceUnit.CM) > 10) {
             idle();
         }
@@ -110,7 +188,6 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     }
 
 
-    class servo {
         public void vertical() {
             hardware.servo_frontLeft.setPosition(1);
             hardware.servo_frontRight.setPosition(0);
@@ -136,9 +213,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             rearRight = motorOrientation.forward;
             sleep(min_delay * 6);
         }
-    }
 
-    class motor {
         public void encoderDriveDistance(double speed, double distance, double timeout) {
             double encoderDistnace = distance * encoder_cm;
 
@@ -166,37 +241,16 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                 idle();
 
                 //Assign target values
-                newFrontLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks * 100;
-                newFrontRightTarget = hardware.motor_frontRight.getCurrentPosition() + (int) frontRightEncoderTicks * 100;
+                newFrontLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks;
+                newFrontRightTarget = hardware.motor_frontRight.getCurrentPosition() + (int) frontRightEncoderTicks;
                 newRearLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks;
-                newRearRightTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftEncoderTicks * 100;
+                newRearRightTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftEncoderTicks;
 
                 //Set the targets
-
-
-                if (frontLeft.equals(motorOrientation.forward)) {
-                    hardware.motor_frontLeft.setTargetPosition(newFrontLeftTarget);
-                } else {
-                    hardware.motor_frontLeft.setTargetPosition(-newFrontLeftTarget);
-                }
-
-                if (frontRight.equals(motorOrientation.forward)) {
-                    hardware.motor_frontRight.setTargetPosition(newFrontRightTarget);
-                } else {
-                    hardware.motor_frontRight.setTargetPosition(-newFrontRightTarget);
-                }
-
-                if (rearLeft.equals(motorOrientation.forward)) {
-                    hardware.motor_rearLeft.setTargetPosition(newRearLeftTarget);
-                } else {
-                    hardware.motor_rearLeft.setTargetPosition(-newRearLeftTarget);
-                }
-
-                if (rearRight.equals(motorOrientation.forward)) {
-                    hardware.motor_rearRight.setTargetPosition(newRearRightTarget);
-                } else {
-                    hardware.motor_rearRight.setTargetPosition(-newRearRightTarget);
-                }
+                hardware.motor_frontLeft.setTargetPosition(newFrontLeftTarget);
+                hardware.motor_frontRight.setTargetPosition(newFrontRightTarget);
+                hardware.motor_rearLeft.setTargetPosition(newRearLeftTarget);
+                hardware.motor_rearRight.setTargetPosition(newRearRightTarget);
 
                 //Set the mode on encoders to run to position
                 hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -218,7 +272,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
 
                 idle();
 
-                while (opModeIsActive() && (runtime.seconds() < timeout) && (hardware.motor_rearLeft.isBusy())) {
+                while (opModeIsActive() && (runtime.seconds() < timeout) && hardware.motor_rearLeft.isBusy() && hardware.motor_rearRight.isBusy() && hardware.motor_frontLeft.isBusy() && hardware.motor_frontRight.isBusy()) {
                     idle();
                 }
 
@@ -297,5 +351,5 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             sleep(min_delay);
         }
-    }
+
 }
