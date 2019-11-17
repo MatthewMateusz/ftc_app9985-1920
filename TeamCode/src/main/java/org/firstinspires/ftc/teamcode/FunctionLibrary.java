@@ -272,7 +272,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
 
                 idle();
 
-                while (opModeIsActive() && (runtime.seconds() < timeout) && hardware.motor_rearLeft.isBusy() && hardware.motor_rearRight.isBusy() && hardware.motor_frontLeft.isBusy() && hardware.motor_frontRight.isBusy()) {
+                while (opModeIsActive() && (runtime.seconds() < timeout) && (hardware.motor_rearLeft.getCurrentPosition() <= newFrontLeftTarget) && (hardware.motor_rearRight.getCurrentPosition() <= newRearRightTarget) && (hardware.motor_frontLeft.getCurrentPosition() <= newFrontLeftTarget) && (hardware.motor_frontRight.getCurrentPosition() <= newFrontRightTarget)) {
                     idle();
                 }
 
