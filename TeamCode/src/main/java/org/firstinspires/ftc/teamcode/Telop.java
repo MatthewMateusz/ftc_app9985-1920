@@ -124,7 +124,7 @@ public class Telop extends OpMode {
         //robot.servo_frontRight.setPosition(-.5*gamepad1.right_stick_x+.5);
 
         if (!robot.pressed(robot.armLimitLiftUp) && gamepad2.dpad_up)
-            robot.armMotorLift.setPower(.35);
+            robot.armMotorLift.setPower(.25);
         else if (!robot.pressed(robot.armLimitLiftDown) && gamepad2.dpad_down)
             robot.armMotorLift.setPower(-.1);
         else
@@ -138,21 +138,6 @@ public class Telop extends OpMode {
         else
             robot.armMotorRotate.setPower(0);
 
-        if (gamepad2.y) {
-            robot.armServoTop.setPower(.03);
-            //robot.armServoBottom.setPower(.03);
-
-        }
-        else if (gamepad2.b){
-            robot.armServoTop.setPower(-1);
-            //robot.armServoBottom.setPower(-1);
-
-        }
-        else if (gamepad2.a){
-            robot.armServoTop.setPower(1);
-            //robot.armServoBottom.setPower(1);
-
-        }
 
 
 
@@ -177,8 +162,6 @@ public class Telop extends OpMode {
         // telemetry.addData("vert Servo",  "position = %.2f",robot.steeringstriaght + servoOffsetV);
         telemetry.addData("Servo Offset H","Offset H = %.2f", servoOffsetH);
         telemetry.addData("Servo Offset V","Offset V = %.2f", servoOffsetV);
-        telemetry.addData("Bottom Servo","Bottom Servo = %.2f",robot.armServoBottom.getPower());
-        telemetry.addData("Top Servo","Top Servo = %.2f",robot.armServoTop.getPower());
         //telemetry.addData("left",  "%.2f", left);
         telemetry.update();
 
