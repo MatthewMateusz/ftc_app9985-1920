@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 abstract public class FunctionLibrary  extends LinearOpMode {
@@ -17,16 +16,15 @@ abstract public class FunctionLibrary  extends LinearOpMode {
 
 
 
-
     enum motorOrientation {
         forward,
         reverse
     }
 
-    motorOrientation frontLeft;
-    motorOrientation frontRight;
-    motorOrientation rearLeft;
-    motorOrientation rearRight;
+    private motorOrientation frontLeft;
+    private motorOrientation frontRight;
+    private motorOrientation rearLeft;
+    private motorOrientation rearRight;
 
 
     //NeveRest 40 Gearbox
@@ -42,16 +40,16 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     static final long min_delay = 100;
 
     //speed variables
-    public static final double speed_full = 1;
-    public static final double speed_normal = 0.7;
-    public static final double speed_half = 0.5;
-    public static final double speed_slow = 0.3;
-    public static final double speed_death = 0.1;
+    static final double speed_full = 1;
+    static final double speed_normal = 0.7;
+    static final double speed_half = 0.5;
+    static final double speed_slow = 0.3;
+    static final double speed_death = 0.1;
 
     //timeout
-    public static final double tShort = 3;
-    public static final double tMedium = 5;
-    public static final double tLong = 10;
+    static final double tShort = 3;
+    static final double tMedium = 5;
+    static final double tLong = 10;
 
     private ElapsedTime runtime = new ElapsedTime();
 
