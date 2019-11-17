@@ -70,50 +70,27 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     }
 
     public void forwardOnTime(double speed, double time) {
-        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
         runtime.reset();
-        hardware.motor_frontLeft.setPower(speed);
-        hardware.motor_frontRight.setPower(-speed);
-        hardware.motor_rearLeft.setPower(speed);
-        hardware.motor_rearRight.setPower(-speed);
+        setDriveMotorPower(speed, -speed, speed, -speed);
         while (opModeIsActive() && runtime.seconds() <= time) {
             idle();
         }
-        hardware.motor_frontLeft.setPower(0);
-        hardware.motor_frontRight.setPower(0);
-        hardware.motor_rearLeft.setPower(0);
-        hardware.motor_rearRight.setPower(0);
-        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDriveMotorPower_all(0);
+        setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sleep(min_delay);
     }
 
     public void horizontalOnTime(double speed, double time) {
-        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
         runtime.reset();
-        hardware.motor_frontLeft.setPower(speed);
-        hardware.motor_frontRight.setPower(speed);
-        hardware.motor_rearLeft.setPower(speed);
-        hardware.motor_rearRight.setPower(speed);
-        while (opModeIsActive() && runtime.seconds() <= time) {
+        setDriveMotorPower_all(speed);
+        while (opModeIsActive() &&
+                runtime.seconds() <= time) {
             idle();
         }
-        hardware.motor_frontLeft.setPower(0);
-        hardware.motor_frontRight.setPower(0);
-        hardware.motor_rearLeft.setPower(0);
-        hardware.motor_rearRight.setPower(0);
-        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDriveMotorPower_all(0);
+        setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sleep(min_delay);
     }
 
@@ -159,31 +136,21 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     }
 
     public void BackUP_stop(double speed, double timeout, double angle) {
-        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.servo_frontLeft.setPosition(angle);
         hardware.servo_frontRight.setPosition(angle);
         hardware.servo_rearLeft.setPosition(angle);
         hardware.servo_rearRight.setPosition(angle);
         sleep(500);
         runtime.reset();
-        hardware.motor_frontLeft.setPower(speed);
-        hardware.motor_frontRight.setPower(speed);
-        hardware.motor_rearLeft.setPower(speed);
-        hardware.motor_rearRight.setPower(speed);
-        while (opModeIsActive() && runtime.seconds() <= timeout && hardware.backDistance.getDistance(DistanceUnit.CM) > 10) {
+        setDriveMotorPower_all(speed);
+        while (opModeIsActive() &&
+                runtime.seconds() <= timeout &&
+                hardware.backDistance.getDistance(DistanceUnit.CM) > 10) {
             idle();
         }
-        hardware.motor_frontLeft.setPower(0);
-        hardware.motor_frontRight.setPower(0);
-        hardware.motor_rearLeft.setPower(0);
-        hardware.motor_rearRight.setPower(0);
-        hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDriveMotorPower_all(0);
+        setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sleep(min_delay);
     }
 
@@ -241,10 +208,10 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                 idle();
 
                 //Assign target values
-                newFrontLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks;
+                newFrontLeftTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftEncoderTicks;
                 newFrontRightTarget = hardware.motor_frontRight.getCurrentPosition() + (int) frontRightEncoderTicks;
                 newRearLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks;
-                newRearRightTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftEncoderTicks;
+                newRearRightTarget = hardware.motor_rearRight.getCurrentPosition() + (int) rearRightEncoderTicks;
 
                 //Set the targets
                 hardware.motor_frontLeft.setTargetPosition(newFrontLeftTarget);
@@ -253,59 +220,34 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                 hardware.motor_rearRight.setTargetPosition(newRearRightTarget);
 
                 //Set the mode on encoders to run to position
-                hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                setDriveMotorMode_all(DcMotor.RunMode.RUN_TO_POSITION);
 
                 //Reset the timeout and start motion
                 runtime.reset();
 
-
                 //power = Range.clip(Math.abs(power), 0.0, 1.0);
                 double vpower = Range.clip(Math.abs(power), 0.0, 1.0);
-                hardware.motor_rearLeft.setPower(vpower);
-                hardware.motor_rearRight.setPower(vpower);
-                hardware.motor_frontLeft.setPower(vpower);
-                hardware.motor_frontRight.setPower(vpower);
+                setDriveMotorPower_all(vpower);
 
-
-                idle();
-
-                while (opModeIsActive() && (runtime.seconds() < timeout) && (hardware.motor_rearLeft.getCurrentPosition() <= newFrontLeftTarget) && (hardware.motor_rearRight.getCurrentPosition() <= newRearRightTarget) && (hardware.motor_frontLeft.getCurrentPosition() <= newFrontLeftTarget) && (hardware.motor_frontRight.getCurrentPosition() <= newFrontRightTarget)) {
+                while (opModeIsActive() &&
+                        (runtime.seconds() < timeout) &&
+                        (hardware.motor_rearLeft.getCurrentPosition() <= newRearLeftTarget) &&
+                        (hardware.motor_rearRight.getCurrentPosition() <= newRearRightTarget) &&
+                        (hardware.motor_frontLeft.getCurrentPosition() <= newFrontLeftTarget) &&
+                        (hardware.motor_frontRight.getCurrentPosition() <= newFrontRightTarget)) {
                     idle();
                 }
 
-                hardware.motor_frontLeft.setPower(0);
-                hardware.motor_frontRight.setPower(0);
-                hardware.motor_rearLeft.setPower(0);
-                hardware.motor_rearRight.setPower(0);
-
-                hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                setDriveMotorPower_all(0);
+                setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
-        }
-        public void liftArm(double timeout, double speed) {
-            runtime.reset();
-            double power = Math.abs(speed);
-            //set motor to power
-
-            while (opModeIsActive() && runtime.seconds() <= timeout) {
-                idle();
-            }
-
-            //set motor to 0
         }
 
         public void runToHit(DigitalChannel touchsensor, double speed, double timeout) {
-            hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
             runtime.reset();
+            setDriveMotorPower(-speed, speed, -speed, speed);
             hardware.motor_frontLeft.setPower(-speed);
             hardware.motor_frontRight.setPower(speed);
             hardware.motor_rearLeft.setPower(-speed);
@@ -315,41 +257,52 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                 telemetry.update();
                 idle();
             }
-            hardware.motor_frontLeft.setPower(0);
-            hardware.motor_frontRight.setPower(0);
-            hardware.motor_rearLeft.setPower(0);
-            hardware.motor_rearRight.setPower(0);
-            hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            setDriveMotorPower_all(0);
+            setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
             sleep(min_delay);
         }
 
         public void runToUnHit(DigitalChannel touchsensor, double speed, double timeout) {
-            hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
             runtime.reset();
-            hardware.motor_frontLeft.setPower(-speed);
-            hardware.motor_frontRight.setPower(speed);
-            hardware.motor_rearLeft.setPower(-speed);
-            hardware.motor_rearRight.setPower(speed);
+            setDriveMotorPower(-speed, speed, -speed, speed);
             while (opModeIsActive() && runtime.seconds() <= timeout && hardware.pressed(touchsensor)) {
                 telemetry.addData("touchy: ", "%b", touchsensor.getState());
                 telemetry.update();
                 idle();
             }
-            hardware.motor_frontLeft.setPower(0);
-            hardware.motor_frontRight.setPower(0);
-            hardware.motor_rearLeft.setPower(0);
-            hardware.motor_rearRight.setPower(0);
-            hardware.motor_frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.motor_frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.motor_rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            hardware.motor_rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            setDriveMotorPower_all(0);
+            setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             sleep(min_delay);
+        }
+
+        public void setDriveMotorMode(DcMotor.RunMode frontLeft, DcMotor.RunMode frontRight, DcMotor.RunMode rearLeft, DcMotor.RunMode rearRight) {
+            hardware.motor_frontLeft.setMode(frontLeft);
+            hardware.motor_frontRight.setMode(frontRight);
+            hardware.motor_rearLeft.setMode(rearLeft);
+            hardware.motor_rearRight.setMode(rearRight);
+        }
+
+        public void setDriveMotorMode_all(DcMotor.RunMode mode) {
+            hardware.motor_frontLeft.setMode(mode);
+            hardware.motor_frontRight.setMode(mode);
+            hardware.motor_rearLeft.setMode(mode);
+            hardware.motor_rearRight.setMode(mode);
+        }
+
+        public void setDriveMotorPower(double frontLeft, double frontRight, double rearLeft, double rearRight) {
+            hardware.motor_frontLeft.setPower(frontLeft);
+            hardware.motor_frontRight.setPower(frontRight);
+            hardware.motor_rearLeft.setPower(rearLeft);
+            hardware.motor_rearRight.setPower(rearRight);
+        }
+
+        public void setDriveMotorPower_all(double power) {
+            hardware.motor_frontLeft.setPower(power);
+            hardware.motor_frontRight.setPower(power);
+            hardware.motor_rearLeft.setPower(power);
+            hardware.motor_rearRight.setPower(power);
         }
 
 }
