@@ -123,23 +123,35 @@ public class Telop extends OpMode {
         //robot.servo_rearLeft.setPosition(-.5*gamepad1.right_stick_x+.5);
         //robot.servo_frontRight.setPosition(-.5*gamepad1.right_stick_x+.5);
 
-        if (!robot.pressed(robot.armLimitLiftUp) && gamepad2.dpad_up)
-            robot.armMotorLift.setPower(.25);
+        if  (gamepad2.dpad_up){
+            robot.armMotorLift.setPower(1);}
         else if (!robot.pressed(robot.armLimitLiftDown) && gamepad2.dpad_down)
-            robot.armMotorLift.setPower(-.1);
+        {robot.armMotorLift.setPower(-.5);}
         else
-            robot.armMotorLift.setPower(0);
+        {robot.armMotorLift.setPower(0);}
 
 
-        if (gamepad2.left_stick_y > 0 && !robot.pressed(robot.armLimitRotateDown))
-            robot.armMotorRotate.setPower(.25);
-        else if (gamepad2.left_stick_y < 0 && !robot.pressed(robot.armLimitRotateUp))
-            robot.armMotorRotate.setPower(-.25);
-        else
-            robot.armMotorRotate.setPower(0);
+        if (gamepad2.y && !robot.pressed(robot.armLimitRotateDown)) {
+            robot.armMotorRotate.setPower(.5);}
+        else if (gamepad2.a && !robot.pressed(robot.armLimitRotateUp)) {
+            robot.armMotorRotate.setPower(-.5);}
+        else {
+            robot.armMotorRotate.setPower(0);}
 
+        if (gamepad2.left_stick_y == -1 ) {
+            robot.servo_GrabberLeft.setPosition(.25);
+           }
 
+        else if (gamepad2.left_stick_y == 1) {
+            robot.servo_GrabberLeft.setPosition(.75);
+        }
 
+        if (gamepad2.right_stick_y == -1 ) {
+            robot.servo_GrabberRight.setPosition(.25);
+        }
+
+        else if (gamepad2.right_stick_y == 1)
+        { robot.servo_GrabberRight.setPosition(.75);}
 
         //Moves front servos
         //if (gamepad2.dpad_left)
