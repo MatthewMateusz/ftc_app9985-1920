@@ -132,25 +132,28 @@ public class Telop extends OpMode {
 
 
         if (gamepad2.y && !robot.pressed(robot.armLimitRotateDown)) {
-            robot.armMotorRotate.setPower(.5);}
+            robot.armMotorRotate.setPower(.5);
+        }
         else if (gamepad2.a && !robot.pressed(robot.armLimitRotateUp)) {
-            robot.armMotorRotate.setPower(-.5);}
+            robot.armMotorRotate.setPower(-.5);
+        }
         else {
-            robot.armMotorRotate.setPower(0);}
+            robot.armMotorRotate.setPower(0);
+        }
 
-        if (gamepad2.left_stick_y == -1 ) {
+        if (gamepad2.left_stick_y < 0 ) {
             robot.servo_GrabberLeft.setPosition(.25);
            }
 
-        else if (gamepad2.left_stick_y == 1) {
+        else if (gamepad2.left_stick_y > 0) {
             robot.servo_GrabberLeft.setPosition(.75);
         }
 
-        if (gamepad2.right_stick_y == -1 ) {
+        if (gamepad2.right_stick_y < 0 ) {
             robot.servo_GrabberRight.setPosition(.25);
         }
 
-        else if (gamepad2.right_stick_y == 1)
+        else if (gamepad2.right_stick_y > 0)
         { robot.servo_GrabberRight.setPosition(.75);}
 
         //Moves front servos
