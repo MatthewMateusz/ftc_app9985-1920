@@ -39,16 +39,15 @@ public class Hardware {
     public Servo servo_frontRight = null;
     public Servo servo_rearLeft = null;
     public Servo servo_rearRight = null;
-    public CRServo armServoBottom = null;
-    public CRServo armServoTop = null;
+    public Servo servo_GrabberLeft = null;
+    public Servo servo_GrabberRight = null;
 
     //Sensors
 
     public DigitalChannel armLimitRotateUp = null;
     public DigitalChannel armLimitRotateDown = null;
-    public DigitalChannel armLimitLiftUp = null;
     public DigitalChannel armLimitLiftDown = null;
-
+    public DigitalChannel armLimitLiftUp = null;
     public Rev2mDistanceSensor backDistance= null;
 
     HardwareMap hwMap = null;
@@ -71,12 +70,11 @@ public class Hardware {
         servo_frontRight = setupServo(hwMap, "servo_frontRight", initPosition);
         servo_rearLeft = setupServo(hwMap, "servo_rearLeft", initPosition);
         servo_rearRight = setupServo(hwMap, "servo_rearRight", initPosition);
-        armServoBottom = setupContinuousServo(hwMap,"armServoBottom",0.03);
-        armServoTop = setupContinuousServo(hwMap,"armServoTop",0.03);
+        servo_GrabberLeft = setupServo(hwMap, "servo_GrabberLeft", .25);
+        servo_GrabberRight = setupServo(hwMap, "servo_GrabberRight", .25);
 
         armLimitRotateUp = hwMap.get(DigitalChannel.class, "armLimitRotateUp");
         armLimitRotateDown = hwMap.get(DigitalChannel.class,"armLimitRotateDown");
-        armLimitLiftUp = hwMap.get(DigitalChannel.class,"armLimitLiftUp");
         armLimitLiftDown = hwMap.get(DigitalChannel.class, "armLimitLiftDown");
 
         backDistance = (Rev2mDistanceSensor) hwMap.get(DistanceSensor.class, "backDistanceSensor");
