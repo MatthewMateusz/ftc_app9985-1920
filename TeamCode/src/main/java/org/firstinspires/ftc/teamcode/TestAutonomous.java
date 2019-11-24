@@ -13,10 +13,9 @@ public class TestAutonomous extends FunctionLibrary {
 
         vertical();
         encoderDriveDistance(speed_half, 2*one_tile, tMedium);
-
-
-
-
-
+        encoderDriveDistance(speed_half, -2*one_tile, tMedium);
+        horizontal();
+        encoderDriveDistance(speed_half, 2*one_tile, tMedium);
+        encoderDriveDistance(speed_half, -2*one_tile, tMedium);
     }
 }

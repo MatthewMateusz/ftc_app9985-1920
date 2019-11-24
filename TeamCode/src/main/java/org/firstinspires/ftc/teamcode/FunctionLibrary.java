@@ -6,7 +6,16 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 abstract public class FunctionLibrary  extends LinearOpMode {
 
@@ -21,6 +30,13 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         reverse
     }
 
+    enum capStone {
+        left,
+        middle,
+        right,
+        unkown
+    }
+
     private motorOrientation frontLeft;
     private motorOrientation frontRight;
     private motorOrientation rearLeft;
@@ -33,6 +49,17 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     //3-inch wheel (7.62cm)
     static final double adjust = 4;
     static final double encoder_cm = (encoder_tick_per_revolution / (7.62 * 3.141592653589793)) * adjust;
+
+    //Tensor / Vuforia
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = FRONT;
+    private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
+    private static final String SKYSTONE = "Skystone";
+    private static final String STONE = "Stone";
+    VuforiaLocalizer vuforia;
+    TFObjectDetector tfod;
+
+    private Boolean enabledVuforia = false;
+    private Boolean enabledTfod = false;
 
     //distance variables
     static final double inch_to_cm = 2.54;
@@ -67,89 +94,40 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         }
     }
 
-    public void forwardOnTime(double speed, double time) {
-        setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
-        runtime.reset();
-        setDriveMotorPower(speed, -speed, speed, -speed);
-        while (opModeIsActive() && runtime.seconds() <= time) {
-            idle();
-        }
-        setDriveMotorPower_all(0);
-        setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sleep(min_delay);
+    void initVuforia () {
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = secure.VUFORIA_KEY;
+        parameters.cameraDirection = CAMERA_CHOICE;
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        enabledVuforia = true;
+
     }
 
-    public void horizontalOnTime(double speed, double time) {
-        setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
-        runtime.reset();
-        setDriveMotorPower_all(speed);
-        while (opModeIsActive() &&
-                runtime.seconds() <= time) {
-            idle();
-        }
-        setDriveMotorPower_all(0);
-        setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sleep(min_delay);
+    void initTfod() {
+        initVuforia();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(cameraMonitorViewId);
+        tfodParameters.minimumConfidence = 0.7;
+
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, STONE, SKYSTONE);
+        enabledTfod = true;
     }
 
-
-    public void rotateArmTime(double timeout) {
-        hardware.armMotorRotate.setPower(-speed_half);
-        runtime.reset();
-        while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(hardware.armLimitRotateUp)) {
-            idle();
+    void testBlockThing(long delay) {
+        tfod.activate();
+        while(opModeIsActive()) {
+            List<Recognition> updatedRecongnitions = tfod.getUpdatedRecognitions();
+            if (updatedRecongnitions != null) {
+                for (Recognition recon : updatedRecongnitions) {
+                    telemetry.addData("Object: ", recon.getLabel());
+                }
+                telemetry.update();
+            }
+            sleep(delay);
         }
-        hardware.armMotorRotate.setPower(0);
-        sleep(min_delay);
-    }
-
-    public void DrotateArmTime(double timeout) {
-        hardware.armMotorRotate.setPower(speed_half);
-        runtime.reset();
-        while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(hardware.armLimitRotateDown)) {
-            idle();
-        }
-        hardware.armMotorRotate.setPower(0);
-        sleep(min_delay);
-    }
-
-    public void liftArmTime (double timeout) {
-        hardware.armMotorLift.setPower(speed_slow);
-        runtime.reset();
-        while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(hardware.armLimitLiftUp)) {
-            idle();
-        }
-        hardware.armMotorLift.setPower(0);
-        sleep(min_delay);
-    }
-
-    public void lowerArmTime (double timeout) {
-        hardware.armMotorLift.setPower(-speed_slow);
-        runtime.reset();
-        while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(hardware.armLimitLiftDown)) {
-            idle();
-        }
-        hardware.armMotorLift.setPower(0);
-        sleep(min_delay);
-    }
-
-    public void BackUP_stop(double speed, double timeout, double angle) {
-        setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.servo_frontLeft.setPosition(angle);
-        hardware.servo_frontRight.setPosition(angle);
-        hardware.servo_rearLeft.setPosition(angle);
-        hardware.servo_rearRight.setPosition(angle);
-        sleep(500);
-        runtime.reset();
-        setDriveMotorPower_all(speed);
-        while (opModeIsActive() &&
-                runtime.seconds() <= timeout &&
-                hardware.backDistance.getDistance(DistanceUnit.CM) > 10) {
-            idle();
-        }
-        setDriveMotorPower_all(0);
-        setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sleep(min_delay);
+        tfod.shutdown();
     }
 
 
@@ -194,7 +172,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                                 double timeout) {
 
             //Reset the encoders on the motors that we want to use
-            hardware.motor_rearLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            setDriveMotorMode_all(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             //Make targets for encoder(s)
             int newFrontLeftTarget;
@@ -202,14 +180,35 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             int newRearLeftTarget;
             int newRearRightTarget;
 
+
             if (opModeIsActive()) {
                 idle();
 
                 //Assign target values
-                newFrontLeftTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftEncoderTicks;
-                newFrontRightTarget = hardware.motor_frontRight.getCurrentPosition() + (int) frontRightEncoderTicks;
-                newRearLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks;
-                newRearRightTarget = hardware.motor_rearRight.getCurrentPosition() + (int) rearRightEncoderTicks;
+                if (frontLeft.equals(motorOrientation.forward)) {
+                    newFrontLeftTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftEncoderTicks;
+                } else {
+                    newFrontLeftTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftEncoderTicks * -1;
+                }
+
+                if (frontRight.equals(motorOrientation.forward)) {
+                    newFrontRightTarget = hardware.motor_frontRight.getCurrentPosition() + (int) frontRightEncoderTicks;
+                } else {
+                    newFrontRightTarget = hardware.motor_frontRight.getCurrentPosition() + (int) frontRightEncoderTicks * -1;
+                }
+
+                if (rearLeft.equals(motorOrientation.forward)) {
+                    newRearLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks;
+                } else {
+                    newRearLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) rearLeftEncoderTicks * -1;
+                }
+
+                if (rearRight.equals(motorOrientation.forward)) {
+                    newRearRightTarget = hardware.motor_rearRight.getCurrentPosition() + (int) rearRightEncoderTicks;
+                } else {
+                    newRearRightTarget = hardware.motor_rearRight.getCurrentPosition() + (int) rearRightEncoderTicks * -1;
+                }
+
 
                 //Set the targets
                 hardware.motor_frontLeft.setTargetPosition(newFrontLeftTarget);
@@ -229,10 +228,10 @@ abstract public class FunctionLibrary  extends LinearOpMode {
 
                 while (opModeIsActive() &&
                         (runtime.seconds() < timeout) &&
-                        (hardware.motor_rearLeft.getCurrentPosition() <= newRearLeftTarget) &&
-                        (hardware.motor_rearRight.getCurrentPosition() <= newRearRightTarget) &&
-                        (hardware.motor_frontLeft.getCurrentPosition() <= newFrontLeftTarget) &&
-                        (hardware.motor_frontRight.getCurrentPosition() <= newFrontRightTarget)) {
+                        notAtTarget(hardware.motor_rearLeft.getCurrentPosition(), newFrontLeftTarget ) &&
+                        notAtTarget(hardware.motor_rearRight.getCurrentPosition(), newRearRightTarget) &&
+                        notAtTarget(hardware.motor_frontLeft.getCurrentPosition(), newFrontLeftTarget) &&
+                        notAtTarget(hardware.motor_frontRight.getCurrentPosition(), newFrontRightTarget)) {
                     idle();
                 }
 
@@ -242,37 +241,20 @@ abstract public class FunctionLibrary  extends LinearOpMode {
 
         }
 
-        public void runToHit(DigitalChannel touchsensor, double speed, double timeout) {
-            setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
-            runtime.reset();
-            setDriveMotorPower(-speed, speed, -speed, speed);
-            hardware.motor_frontLeft.setPower(-speed);
-            hardware.motor_frontRight.setPower(speed);
-            hardware.motor_rearLeft.setPower(-speed);
-            hardware.motor_rearRight.setPower(speed);
-            while (opModeIsActive() && runtime.seconds() <= timeout && !hardware.pressed(touchsensor)) {
-                telemetry.addData("touchy: ", "%b", touchsensor.getState());
-                telemetry.update();
-                idle();
+        private Boolean notAtTarget(int current, int destination) {
+            if (destination > 0) {
+                if (current <= destination) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (current >= destination) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
-            setDriveMotorPower_all(0);
-            setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            sleep(min_delay);
-        }
-
-        public void runToUnHit(DigitalChannel touchsensor, double speed, double timeout) {
-            setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
-            runtime.reset();
-            setDriveMotorPower(-speed, speed, -speed, speed);
-            while (opModeIsActive() && runtime.seconds() <= timeout && hardware.pressed(touchsensor)) {
-                telemetry.addData("touchy: ", "%b", touchsensor.getState());
-                telemetry.update();
-                idle();
-            }
-            setDriveMotorPower_all(0);
-            setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            sleep(min_delay);
         }
 
         public void setDriveMotorMode(DcMotor.RunMode frontLeft, DcMotor.RunMode frontRight, DcMotor.RunMode rearLeft, DcMotor.RunMode rearRight) {
