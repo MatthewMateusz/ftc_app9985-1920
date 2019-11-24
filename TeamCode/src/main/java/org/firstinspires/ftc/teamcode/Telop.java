@@ -4,6 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
+
 @TeleOp(name="Pushbot: Teleop Tank", group="Pushbot")
 //@Disabled
 public class Telop extends OpMode {
@@ -178,6 +182,7 @@ public class Telop extends OpMode {
         // telemetry.addData("vert Servo",  "position = %.2f",robot.steeringstriaght + servoOffsetV);
         telemetry.addData("Servo Offset H","Offset H = %.2f", servoOffsetH);
         telemetry.addData("Servo Offset V","Offset V = %.2f", servoOffsetV);
+        telemetry.addData("Distance Up (Inch)", "Distance Up = %.2f", robot.sensor_color_dist_up.getDistance(DistanceUnit.INCH));
         //telemetry.addData("left",  "%.2f", left);
         telemetry.update();
 
