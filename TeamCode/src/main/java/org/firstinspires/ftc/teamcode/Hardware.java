@@ -48,10 +48,10 @@ public class Hardware {
     public DigitalChannel armLimitRotateUp = null;
     public DigitalChannel armLimitRotateDown = null;
     public DigitalChannel armLimitLiftDown = null;
-    public DigitalChannel armLimitLiftUp = null;
-    public Rev2mDistanceSensor backDistance= null;
+      public Rev2mDistanceSensor backDistance= null;
     public DistanceSensor sensorDistanceUp = null;
     public DistanceSensor sensorDistanceLeft = null;
+
 
     HardwareMap hwMap = null;
 
