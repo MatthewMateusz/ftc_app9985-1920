@@ -7,15 +7,14 @@ public class TestAutonomous extends FunctionLibrary {
 
     @Override
     public void runOpMode() throws InterruptedException {
+    initVuforia();
+    initTfod();
+    tfod.activate();
 
-        setupHardware();
-        waitForStart();
+    waitForStart();
 
-        vertical();
-        encoderDriveDistance(speed_half, 2*one_tile, tMedium);
-        encoderDriveDistance(speed_half, -2*one_tile, tMedium);
-        horizontal();
-        encoderDriveDistance(speed_half, 2*one_tile, tMedium);
-        encoderDriveDistance(speed_half, -2*one_tile, tMedium);
+    encoderDriveDistance(speed_half, 1 * one_tile, 2);
+    testBlockThing(500, 2);
+
     }
 }
