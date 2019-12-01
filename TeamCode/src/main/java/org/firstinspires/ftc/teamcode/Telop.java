@@ -16,10 +16,8 @@ public class Telop extends OpMode {
 
     double          servoOffsetH  = 0.0;                  // Servo mid position
     double          servoOffsetV  = 0.5;
-    final double    servoSpeedH   = 0.004;
-    final double    servoSpeedV   = 0.004;
-    final double    latchUp       = 0.5;
-    final double    latchDown     = 0.25;
+    //final double    servoSpeedH   = 0.004;
+    //final double    servoSpeedV   = 0.004;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -128,9 +126,9 @@ public class Telop extends OpMode {
         //robot.servo_frontRight.setPosition(-.5*gamepad1.right_stick_x+.5);
 
         if  (gamepad2.dpad_up){
-            robot.armMotorLift.setPower(1);}
+            robot.armMotorLift.setPower(.75);}
         else if (!robot.pressed(robot.armLimitLiftDown) && gamepad2.dpad_down)
-        {robot.armMotorLift.setPower(-.5);}
+        {robot.armMotorLift.setPower(-.4);}
         else
         {robot.armMotorLift.setPower(0);}
 
@@ -172,17 +170,18 @@ public class Telop extends OpMode {
         //servoOffsetV -= servoSpeedV;
 
         // Move both servos to new position.  Assume servos are mirror image of each other.
-        servoOffsetH = Range.clip(servoOffsetH, -0.5, 0.5);
-        servoOffsetV = Range.clip(servoOffsetV, -.5, 0.5);
+        //servoOffsetH = Range.clip(servoOffsetH, -0.5, 0.5);
+        //servoOffsetV = Range.clip(servoOffsetV, -.5, 0.5);
 
         //robot.grabberVertServo.setPosition(robot.steeringstriaght - servoOffset);
 //}
 
         // Send telemetry message to signify robot running;
         // telemetry.addData("vert Servo",  "position = %.2f",robot.steeringstriaght + servoOffsetV);
-        telemetry.addData("Servo Offset H","Offset H = %.2f", servoOffsetH);
-        telemetry.addData("Servo Offset V","Offset V = %.2f", servoOffsetV);
-        telemetry.addData("Distance Up (Inch)", "Distance Up = %.2f", robot.sensor_color_dist_up.getDistance(DistanceUnit.INCH));
+        //telemetry.addData("Servo Offset H","Offset H = %.2f", servoOffsetH);
+        //telemetry.addData("Servo Offset V","Offset V = %.2f", servoOffsetV);
+        telemetry.addData("Distance Up (Inch)", String.format(Locale.US, "%.02f", robot.sensorDistanceUp.getDistance(DistanceUnit.INCH)));
+        telemetry.addData("Distance Left Front (Inch)", String.format(Locale.US, "%.02f", robot.sensorDistanceLeft.getDistance(DistanceUnit.INCH)));
         //telemetry.addData("left",  "%.2f", left);
         telemetry.update();
 
