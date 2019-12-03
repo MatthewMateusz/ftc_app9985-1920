@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -30,7 +28,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         reverse
     }
 
-    enum capStone {
+    enum skyStone {
         left,
         middle,
         right,
@@ -51,7 +49,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     static final double encoder_cm = (encoder_tick_per_revolution / (7.62 * 3.141592653589793)) * adjust;
 
     //Tensor / Vuforia
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = FRONT;
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String SKYSTONE = "Skystone";
     private static final String STONE = "Stone";
@@ -95,8 +93,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     }
 
     void initVuforia () {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = secure.VUFORIA_KEY;
         parameters.cameraDirection = CAMERA_CHOICE;
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -105,8 +102,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     }
 
     void initTfod() {
-        initVuforia();
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(cameraMonitorViewId);
         tfodParameters.minimumConfidence = 0.7;
 
@@ -115,19 +111,86 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         enabledTfod = true;
     }
 
-    void testBlockThing(long delay) {
+    skyStone testBlockThing(long delay, double scanningTime) {
         tfod.activate();
-        while(opModeIsActive()) {
+        int left = 0;
+        int middle = 0;
+        int right = 0;
+        runtime.reset();
+        while(opModeIsActive() && runtime.seconds() <= scanningTime) {
             List<Recognition> updatedRecongnitions = tfod.getUpdatedRecognitions();
             if (updatedRecongnitions != null) {
                 for (Recognition recon : updatedRecongnitions) {
                     telemetry.addData("Object: ", recon.getLabel());
+                }
+                if (updatedRecongnitions.size() == 3) {
+                    float skystonePosition = 0;
+                    boolean skystone = false;
+                    float stone1Position = 0;
+                    boolean stone1 = false;
+                    float stone2Position = 0;
+                    boolean stone2 = false;
+
+                    int stoneNumber = 0;
+                    for (Recognition recon : updatedRecongnitions) {
+                        if (recon.getLabel().equals(SKYSTONE)) {
+                            skystonePosition =recon.getLeft();
+                            skystone = true;
+                        } else {
+                            if (stoneNumber == 0) {
+                                stone1Position = recon.getLeft();
+                                stoneNumber++;
+                                stone1 = true;
+                            } else {
+                                stone2Position = recon.getLeft();
+                                stoneNumber++;
+                                stone2 = true;
+                            }
+                        }
+                    }
+                    if (skystone && stone1 && stone2) {
+                        //Ensure the smaller stone position value is in 1
+                        if (stone2Position < stone1Position) {
+                            float temp = stone2Position;
+                            stone2Position = stone1Position;
+                            stone1Position = temp;
+                        }
+
+                        if ((skystonePosition < stone1Position) && (skystonePosition < stone2Position)) {
+                            telemetry.addData("Skystone location:", "left");
+                            left++;
+                        } else if ((skystonePosition > stone1Position) && (skystonePosition < stone2Position)) {
+                            telemetry.addData("Skystone location:", "middle");
+                            middle++;
+                        } else if (skystonePosition > stone1Position && skystonePosition > stone2Position) {
+                            telemetry.addData("Skystone locatoin:", "right");
+                            right++;
+                        } else {
+                            telemetry.addData("Skystone location", "I'm failing you");
+                        }
+                    } else {
+                        telemetry.addData("Skystone location:", "Undeterminable");
+                    }
+
                 }
                 telemetry.update();
             }
             sleep(delay);
         }
         tfod.shutdown();
+        if (left > middle) {
+            if (left > right) {
+                return skyStone.left;
+            } else {
+                return skyStone.right;
+            }
+        } else {
+            if (middle > right) {
+                return skyStone.middle;
+            } else {
+                return skyStone.right;
+            }
+        }
     }
 
 
