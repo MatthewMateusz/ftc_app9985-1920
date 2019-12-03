@@ -182,6 +182,7 @@ public class Telop extends OpMode {
         //telemetry.addData("Servo Offset V","Offset V = %.2f", servoOffsetV);
         telemetry.addData("Distance Up (Inch)", String.format(Locale.US, "%.02f", robot.sensorDistanceUp.getDistance(DistanceUnit.INCH)));
         telemetry.addData("Distance Left Front (Inch)", String.format(Locale.US, "%.02f", robot.sensorDistanceLeft.getDistance(DistanceUnit.INCH)));
+        telemetry.addData("Distance Back (Inch)", String.format(Locale.US, "&.02f", robot.backDistance.getDistance(DistanceUnit.INCH)));
         //telemetry.addData("left",  "%.2f", left);
         telemetry.update();
 
