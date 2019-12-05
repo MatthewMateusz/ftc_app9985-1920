@@ -125,8 +125,9 @@ public class Telop extends OpMode {
         //robot.servo_rearLeft.setPosition(-.5*gamepad1.right_stick_x+.5);
         //robot.servo_frontRight.setPosition(-.5*gamepad1.right_stick_x+.5);
 
-        if  (gamepad2.dpad_up){
-            robot.armMotorLift.setPower(.75);}
+        if  (!robot.pressed(robot.armLimtLiftUp) && gamepad2.dpad_up) {
+                robot.armMotorLift.setPower(.75);
+            }
         else if (!robot.pressed(robot.armLimitLiftDown) && gamepad2.dpad_down)
         {robot.armMotorLift.setPower(-.4);}
         else

@@ -51,7 +51,7 @@ public class Hardware {
       public Rev2mDistanceSensor backDistance= null;
     public DistanceSensor sensorDistanceUp = null;
     public Rev2mDistanceSensor sensorDistanceLeft = null;
-
+    public DigitalChannel armLimtLiftUp = null;
 
     HardwareMap hwMap = null;
 
@@ -79,6 +79,7 @@ public class Hardware {
         armLimitRotateUp = hwMap.get(DigitalChannel.class, "armLimitRotateUp");
         armLimitRotateDown = hwMap.get(DigitalChannel.class,"armLimitRotateDown");
         armLimitLiftDown = hwMap.get(DigitalChannel.class, "armLimitLiftDown");
+        armLimtLiftUp = hwMap.get(DigitalChannel.class,"armLimitLiftUp");
 
         backDistance = (Rev2mDistanceSensor) hwMap.get(DistanceSensor.class, "backDistanceSensor");
         sensorDistanceUp = hwMap.get(DistanceSensor.class, "sensor_color_dist_up");
