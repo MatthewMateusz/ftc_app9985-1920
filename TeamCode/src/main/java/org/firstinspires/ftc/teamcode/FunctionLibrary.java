@@ -35,6 +35,16 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         unkown
     }
 
+    enum grabber {
+        left,
+        right,
+    }
+
+    enum grabState {
+        open,
+        close
+    }
+
     private motorOrientation frontLeft;
     private motorOrientation frontRight;
     private motorOrientation rearLeft;
@@ -100,6 +110,39 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         enabledVuforia = true;
 
     }
+
+    void setGrabber(grabber which, grabState state) {
+        if (which.equals(grabber.left)) {
+            if (state.equals(grabState.close)) {
+                hardware.servo_GrabberLeft.setPosition(1);
+            } else {
+                hardware.servo_GrabberLeft.setPosition(.2);
+            }
+        } else {
+            if (state.equals(grabState.close)) {
+                hardware.servo_GrabberRight.setPosition(1);
+            } else {
+                hardware.servo_GrabberRight.setPosition(.2);
+            }
+        }
+        sleep(500);
+    }
+
+    void RotateArm(boolean counterClockwise, double timeout) {
+        runtime.reset();
+        if (counterClockwise) {
+            while (!hardware.pressed(hardware.armLimitRotateDown) && opModeIsActive() && timeout > runtime.seconds()) {
+                hardware.armMotorRotate.setPower(.5);
+            }
+        } else {
+            while (!hardware.pressed(hardware.armLimitRotateUp) && opModeIsActive() && timeout > runtime.seconds()) {
+                hardware.armMotorRotate.setPower(-.5);
+            }
+        }
+        hardware.armMotorRotate.setPower(0);
+        sleep(100);
+    }
+
 
     void initTfod() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
