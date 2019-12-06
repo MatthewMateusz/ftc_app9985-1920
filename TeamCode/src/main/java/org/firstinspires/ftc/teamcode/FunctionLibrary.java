@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -38,6 +40,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     enum grabber {
         left,
         right,
+        all
     }
 
     enum grabState {
@@ -105,7 +108,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     void initVuforia () {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = secure.VUFORIA_KEY;
-        parameters.cameraDirection = CAMERA_CHOICE;
+        parameters.cameraName = hardware.view;
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
         enabledVuforia = true;
 
@@ -118,14 +121,39 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             } else {
                 hardware.servo_GrabberLeft.setPosition(.2);
             }
-        } else {
+        } else if (which.equals(grabber.right)) {
             if (state.equals(grabState.close)) {
                 hardware.servo_GrabberRight.setPosition(1);
             } else {
                 hardware.servo_GrabberRight.setPosition(.2);
             }
+        } else {
+            if (state.equals(grabState.close)) {
+                hardware.servo_GrabberLeft.setPosition(1);
+                hardware.servo_GrabberRight.setPosition(1);
+            } else {
+                hardware.servo_GrabberRight.setPosition(.2);
+                hardware.servo_GrabberLeft.setPosition(.2);
+            }
         }
         sleep(500);
+    }
+
+    void liftArm(boolean up, double timeout){
+        runtime.reset();
+        if (up) {
+            hardware.armMotorLift.setPower(.75);
+            while (opModeIsActive() && !hardware.pressed(hardware.armLimtLiftUp) && runtime.seconds() < timeout) {
+                idle();
+            }
+            hardware.armMotorLift.setPower(0);
+        } else {
+            hardware.armMotorLift.setPower(-.4);
+            while(opModeIsActive() && !hardware.pressed(hardware.armLimitLiftDown) && runtime.seconds() < timeout) {
+                idle();
+            }
+            hardware.armMotorLift.setPower(0);
+        }
     }
 
     void RotateArm(boolean counterClockwise, double timeout) {
@@ -345,6 +373,41 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                 setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
+        }
+
+        void driveSensorDistance(double speed, DistanceSensor distance, double proximity, double timeout) {
+            setDriveMotorMode_all(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
+            runtime.reset();
+            setDriveMotorPower(getDirection(frontLeft, speed), getDirection(frontRight, speed), getDirection(rearLeft, speed), getDirection(rearRight, speed));
+            while (opModeIsActive() && timeout > runtime.seconds() && (distance.getDistance(DistanceUnit.CM) > proximity) || distance.getDistance(DistanceUnit.CM) != distance.getDistance(DistanceUnit.CM)) {
+                idle();
+                telemetry.addData("Distance: ", distance.getDistance(DistanceUnit.CM));
+                if (distance.getDistance(DistanceUnit.CM) > proximity) {
+                    telemetry.addData("exit", "true");
+                } else {
+                    telemetry.addData("exit", "false");
+                }
+
+                if ((distance.getDistance(DistanceUnit.CM) > proximity) || distance.getDistance(DistanceUnit.CM) != distance.getDistance(DistanceUnit.CM)) {
+                    telemetry.addData("auto exit", "true");
+                } else {
+                    telemetry.addData("auto exit", "false");
+                }
+                telemetry.update();
+
+            }
+            setDriveMotorPower_all(0);
+            setDriveMotorMode_all(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        }
+
+        private double getDirection(motorOrientation motor, double speed) {
+            if (motor.equals(motorOrientation.forward)) {
+                return speed;
+            } else {
+                return speed * -1;
+            }
         }
 
         private Boolean notAtTarget(int current, int destination) {

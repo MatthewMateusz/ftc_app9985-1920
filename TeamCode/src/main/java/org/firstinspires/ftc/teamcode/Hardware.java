@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 public class Hardware {
 
     //Variables to improve readability of code
@@ -53,6 +55,8 @@ public class Hardware {
     public Rev2mDistanceSensor sensorDistanceLeft = null;
     public DigitalChannel armLimtLiftUp = null;
 
+    WebcamName view;
+
     HardwareMap hwMap = null;
 
     public Hardware() {
@@ -84,6 +88,9 @@ public class Hardware {
         backDistance = (Rev2mDistanceSensor) hwMap.get(DistanceSensor.class, "backDistanceSensor");
         sensorDistanceUp = hwMap.get(DistanceSensor.class, "sensor_color_dist_up");
         sensorDistanceLeft = (Rev2mDistanceSensor)hwMap.get(DistanceSensor.class, "leftFrontDistanceSensor");
+
+        view = hwMap.get(WebcamName.class, "The Viewer");
+
     }
 
     private DcMotor setupMotor(HardwareMap hwMap, String phoneName, DcMotor.Direction motorDirection, DcMotor.ZeroPowerBehavior zeroPower) {
