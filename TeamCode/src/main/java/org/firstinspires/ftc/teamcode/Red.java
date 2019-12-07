@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Disabled
-@Autonomous(name="testing", group="testing")
-public class TestAutonomous extends FunctionLibrary {
+@Autonomous(name="Blue", group="testing")
+public class Red extends FunctionLibrary {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,20 +22,20 @@ public class TestAutonomous extends FunctionLibrary {
         switch (location) {
             case left:
                 encoderDriveDistance(speed_half, 0.3 * one_tile, 2);
-                setGrabber(grabber.left, grabState.close);
+                setGrabber(grabber.right, grabState.close);
                 break;
 
             case middle:
                 encoderDriveDistance(speed_half, 0.3 * one_tile, 2);
-                setGrabber(grabber.right, grabState.close);
+                setGrabber(grabber.left, grabState.close);
                 break;
 
             case right:
                 horizontal();
-                encoderDriveDistance(speed_half, -0.4 * one_tile, 2);
+                encoderDriveDistance(speed_half, 0.4 * one_tile, 2);
                 vertical();
                 encoderDriveDistance(speed_half, 0.3 * one_tile, 2);
-                setGrabber(grabber.right, grabState.close);
+                setGrabber(grabber.left, grabState.close);
                 break;
 
             default:
@@ -48,8 +46,8 @@ public class TestAutonomous extends FunctionLibrary {
         encoderDriveDistance(speed_half, -0.3 * one_tile, 2); // Move back
         RotateArm(true, 2.5); //Rotate arm back for driving under bridge
         horizontal(); // servo movement
-        driveSensorDistance(-speed_half, hardware.sensorDistanceUp, 10, 2.5); // drive until the distance sensor up reads less than 10cm
-        encoderDriveDistance(speed_half, -4 * one_tile, 5); //Move out side of bridge
+        driveSensorDistance(speed_half, hardware.sensorDistanceUp, 10, 2.5); // drive until the distance sensor up reads less than 10cm
+        encoderDriveDistance(speed_half, 3.5 * one_tile, 5); //Move out side of bridge
         vertical(); // Servo movement
         RotateArm(false, 2.5); // Rotate arm for block placing position.
         liftArm(true, 0.75); //Lift arm so to not clip the building site

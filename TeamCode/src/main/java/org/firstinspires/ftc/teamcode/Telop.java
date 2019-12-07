@@ -135,10 +135,10 @@ public class Telop extends OpMode {
 
 
         if (gamepad2.y && !robot.pressed(robot.armLimitRotateDown)) {
-            robot.armMotorRotate.setPower(.5);
+            robot.armMotorRotate.setPower(.7);
         }
         else if (gamepad2.a && !robot.pressed(robot.armLimitRotateUp)) {
-            robot.armMotorRotate.setPower(-.5);
+            robot.armMotorRotate.setPower(-.7);
         }
         else {
             robot.armMotorRotate.setPower(0);

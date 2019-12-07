@@ -11,6 +11,9 @@ public class CalibrateHardware extends FunctionLibrary {
         setupHardware();
         waitForStart();
         horizontal();
+        initVuforia();
+        initTfod();
+        tfod.activate();
 
         while (opModeIsActive()) {
             idle();

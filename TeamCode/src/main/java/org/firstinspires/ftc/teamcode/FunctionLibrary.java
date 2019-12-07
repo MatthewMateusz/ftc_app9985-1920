@@ -75,11 +75,11 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     //distance variables
     static final double inch_to_cm = 2.54;
     static final double one_tile = 24 * inch_to_cm;
-    static final long min_delay = 100;
+    static final long min_delay = 50;
 
     //speed variables
     static final double speed_full = 1;
-    static final double speed_normal = 0.7;
+    static final double speed_normal = 0.6;
     static final double speed_half = 0.5;
     static final double speed_slow = 0.3;
     static final double speed_death = 0.1;
@@ -136,7 +136,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                 hardware.servo_GrabberLeft.setPosition(.2);
             }
         }
-        sleep(500);
+        sleep(200);
     }
 
     void liftArm(boolean up, double timeout){
@@ -160,22 +160,22 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         runtime.reset();
         if (counterClockwise) {
             while (!hardware.pressed(hardware.armLimitRotateDown) && opModeIsActive() && timeout > runtime.seconds()) {
-                hardware.armMotorRotate.setPower(.5);
+                hardware.armMotorRotate.setPower(.6);
             }
         } else {
             while (!hardware.pressed(hardware.armLimitRotateUp) && opModeIsActive() && timeout > runtime.seconds()) {
-                hardware.armMotorRotate.setPower(-.5);
+                hardware.armMotorRotate.setPower(-.6);
             }
         }
         hardware.armMotorRotate.setPower(0);
-        sleep(100);
+        sleep(50);
     }
 
 
     void initTfod() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(cameraMonitorViewId);
-        tfodParameters.minimumConfidence = 0.7;
+        tfodParameters.minimumConfidence = 0.6;
 
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, STONE, SKYSTONE);
@@ -275,7 +275,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             frontRight = motorOrientation.forward;
             rearLeft = motorOrientation.reverse;
             rearRight = motorOrientation.forward;
-            sleep(min_delay * 6);
+            sleep(min_delay * 5);
         }
 
         public void horizontal() {
@@ -288,7 +288,7 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             frontRight = motorOrientation.forward;
             rearLeft = motorOrientation.forward;
             rearRight = motorOrientation.forward;
-            sleep(min_delay * 6);
+            sleep(min_delay * 5);
         }
 
         public void encoderDriveDistance(double speed, double distance, double timeout) {
@@ -366,7 +366,6 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                         notAtTarget(hardware.motor_rearRight.getCurrentPosition(), newRearRightTarget) &&
                         notAtTarget(hardware.motor_frontLeft.getCurrentPosition(), newFrontLeftTarget) &&
                         notAtTarget(hardware.motor_frontRight.getCurrentPosition(), newFrontRightTarget)) {
-                    idle();
                 }
 
                 setDriveMotorPower_all(0);
@@ -381,7 +380,6 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             runtime.reset();
             setDriveMotorPower(getDirection(frontLeft, speed), getDirection(frontRight, speed), getDirection(rearLeft, speed), getDirection(rearRight, speed));
             while (opModeIsActive() && timeout > runtime.seconds() && (distance.getDistance(DistanceUnit.CM) > proximity) || distance.getDistance(DistanceUnit.CM) != distance.getDistance(DistanceUnit.CM)) {
-                idle();
                 telemetry.addData("Distance: ", distance.getDistance(DistanceUnit.CM));
                 if (distance.getDistance(DistanceUnit.CM) > proximity) {
                     telemetry.addData("exit", "true");
@@ -395,6 +393,11 @@ abstract public class FunctionLibrary  extends LinearOpMode {
                     telemetry.addData("auto exit", "false");
                 }
                 telemetry.update();
+
+                if (!opModeIsActive()) {
+                    requestOpModeStop();
+                    STOP();
+                }
 
             }
             setDriveMotorPower_all(0);
@@ -452,6 +455,12 @@ abstract public class FunctionLibrary  extends LinearOpMode {
             hardware.motor_frontRight.setPower(power);
             hardware.motor_rearLeft.setPower(power);
             hardware.motor_rearRight.setPower(power);
+        }
+
+        void STOP() {
+            setDriveMotorPower_all(0);
+            hardware.armMotorLift.setPower(0);
+            hardware.armMotorRotate.setPower(0);
         }
 
 }
