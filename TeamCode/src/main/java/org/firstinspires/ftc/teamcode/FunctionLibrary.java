@@ -102,6 +102,8 @@ abstract public class FunctionLibrary  extends LinearOpMode {
     public void waitForStart() {
         while (!isStarted() && !isStopRequested()) {
             idle();
+            telemetry.addData("Run Opmode", opModeIsActive());
+            telemetry.update();
         }
     }
 
@@ -169,6 +171,21 @@ abstract public class FunctionLibrary  extends LinearOpMode {
         }
         hardware.armMotorRotate.setPower(0);
         sleep(50);
+    }
+
+    void Rotate(double speed, boolean clockwise, double time) {
+        setDriveMotorMode_all(DcMotor.RunMode.RUN_USING_ENCODER);
+        runtime.reset();
+        if (clockwise) {
+            setDriveMotorPower(-getDirection(frontLeft, speed), -getDirection(frontRight, speed), getDirection(rearLeft, speed), getDirection(rearRight, speed));
+        } else {
+            setDriveMotorPower(getDirection(frontLeft, speed), getDirection(frontRight, speed), -getDirection(rearLeft, speed), -getDirection(rearRight, speed));
+        }
+        while (opModeIsActive() && (runtime.seconds() < time)) {
+
+        }
+        setDriveMotorPower_all(0);
+
     }
 
 

@@ -17,6 +17,8 @@ public class CalibrateHardware extends FunctionLibrary {
 
         while (opModeIsActive()) {
             idle();
+            telemetry.addData("Opmode", opModeIsActive());
+            telemetry.update();
         }
     }
 }

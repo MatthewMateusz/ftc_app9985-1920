@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="Blue", group="testing")
-public class Blue extends FunctionLibrary {
+@Autonomous(name="Blue - Moved platform", group="testing")
+public class Blue_put extends FunctionLibrary {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -49,10 +49,10 @@ public class Blue extends FunctionLibrary {
             RotateArm(true, 2.5); //Rotate arm back for driving under bridge
             horizontal(); // servo movement
             driveSensorDistance(speed_half, hardware.sensorDistanceUp, 10, 2.5); // drive until the distance sensor up reads less than 10cm
-            encoderDriveDistance(speed_half, 3.5 * one_tile, 5); //Move out side of bridge
-            vertical(); // Servo movement
+            encoderDriveDistance(speed_half, 1.5 * one_tile, 5); //Move out side of bridge
             RotateArm(false, 2.5); // Rotate arm for block placing position.
             liftArm(true, 1); //Lift arm so to not clip the building site
+            Rotate(speed_half, true, 0.5);
             encoderDriveDistance(speed_half, 0.5 * one_tile, 1); // Move forward
             setGrabber(grabber.all, grabState.open);
             encoderDriveDistance(speed_half, -0.5 * one_tile, 2); // Drive away from the building site
@@ -61,8 +61,8 @@ public class Blue extends FunctionLibrary {
             RotateArm(true, 2.5); //Rotate arm back for driving under bridge
             horizontal(); //Horizontal movement time(tm)
             //driveSensorDistance(1, hardware.sensorDistanceUp, 10, 2); // Drive under the bridge
+            */
             requestOpModeStop();
-             */
         } catch (Exception e) {
             STOP();
             throw e;
