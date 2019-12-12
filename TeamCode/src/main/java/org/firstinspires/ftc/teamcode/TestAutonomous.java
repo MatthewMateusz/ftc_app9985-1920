@@ -15,8 +15,5 @@ public class TestAutonomous extends FunctionLibrary {
         tfod.activate();
         waitForStart();
 
-        horizontal();
-        Rotate(0.75, true, 1);
-
     }
 }
