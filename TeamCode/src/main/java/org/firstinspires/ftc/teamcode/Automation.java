@@ -81,6 +81,7 @@ abstract public class Automation extends LinearOpMode {
     static final double tLong = 10;
 
     private ElapsedTime runtime = new ElapsedTime();
+    Stopper stopper = new Stopper();
 
     Hardware hardware = new Hardware();
 
@@ -96,6 +97,7 @@ abstract public class Automation extends LinearOpMode {
             telemetry.addData("Run Opmode", opModeIsActive());
             telemetry.update();
         }
+        stopper.start();
     }
 
     void initVuforia () {
@@ -136,13 +138,13 @@ abstract public class Automation extends LinearOpMode {
         runtime.reset();
         if (up) {
             hardware.armMotorLift.setPower(.75);
-            while (opModeIsActive() && !hardware.pressed(hardware.armLimtLiftUp) && runtime.seconds() < timeout) {
+            while (stopper.canRun() && opModeIsActive() && !hardware.pressed(hardware.armLimtLiftUp) && runtime.seconds() < timeout) {
                 idle();
             }
             hardware.armMotorLift.setPower(0);
         } else {
             hardware.armMotorLift.setPower(-.4);
-            while(opModeIsActive() && !hardware.pressed(hardware.armLimitLiftDown) && runtime.seconds() < timeout) {
+            while(stopper.canRun() && opModeIsActive() && !hardware.pressed(hardware.armLimitLiftDown) && runtime.seconds() < timeout) {
                 idle();
             }
             hardware.armMotorLift.setPower(0);
@@ -152,11 +154,11 @@ abstract public class Automation extends LinearOpMode {
     void RotateArm(boolean counterClockwise, double timeout) {
         runtime.reset();
         if (counterClockwise) {
-            while (!hardware.pressed(hardware.armLimitRotateDown) && opModeIsActive() && timeout > runtime.seconds()) {
+            while (stopper.canRun() && !hardware.pressed(hardware.armLimitRotateDown) && opModeIsActive() && timeout > runtime.seconds()) {
                 hardware.armMotorRotate.setPower(.6);
             }
         } else {
-            while (!hardware.pressed(hardware.armLimitRotateUp) && opModeIsActive() && timeout > runtime.seconds()) {
+            while (stopper.canRun() && !hardware.pressed(hardware.armLimitRotateUp) && opModeIsActive() && timeout > runtime.seconds()) {
                 hardware.armMotorRotate.setPower(-.6);
             }
         }
@@ -212,7 +214,7 @@ abstract public class Automation extends LinearOpMode {
             power = Range.clip(Math.abs(power), 0.0, 1.0);
             setDriveMotorPower_all(power);
 
-            while (opModeIsActive() &&
+            while (stopper.canRun() && opModeIsActive() &&
             runtime.seconds() < timeout &&
             notAtTarget(hardware.motor_frontLeft.getCurrentPosition(), newFrontLeftTarget) &&
             notAtTarget(hardware.motor_frontRight.getCurrentPosition(), newFrontRightTarget) &&
@@ -241,7 +243,7 @@ abstract public class Automation extends LinearOpMode {
         int middle = 0;
         int right = 0;
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds() <= scanningTime) {
+        while( stopper.canRun() && opModeIsActive() && runtime.seconds() <= scanningTime) {
             List<Recognition> updatedRecongnitions = tfod.getUpdatedRecognitions();
             if (updatedRecongnitions != null) {
                 for (Recognition recon : updatedRecongnitions) {
