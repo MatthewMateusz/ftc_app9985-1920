@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="setup", group = "testing")
-public class CalibrateHardware extends FunctionLibrary {
+public class CalibrateHardware extends Automation {
 
     @Override
     public void runOpMode() throws InterruptedException {
