@@ -44,6 +44,7 @@ public class Hardware {
     public Servo servo_rearRight = null;
     public Servo servo_GrabberLeft = null;
     public Servo servo_GrabberRight = null;
+    public CRServo servo_CapstoneRelease = null;
 
     //Sensors
 
@@ -79,6 +80,7 @@ public class Hardware {
         servo_rearRight = setupServo(hwMap, "servo_rearRight", initPosition);
         servo_GrabberLeft = setupServo(hwMap, "servo_GrabberLeft", .25);
         servo_GrabberRight = setupServo(hwMap, "servo_GrabberRight", .25);
+        servo_CapstoneRelease = setupContinuousServo(hwMap,"servo_CapstoneRelease",.05);
 
         armLimitRotateUp = hwMap.get(DigitalChannel.class, "armLimitRotateUp");
         armLimitRotateDown = hwMap.get(DigitalChannel.class,"armLimitRotateDown");
