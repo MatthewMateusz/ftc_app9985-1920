@@ -13,6 +13,7 @@ public class TestAutonomous extends Automation {
         initTfod();
         tfod.activate();
         waitForStart();
+        distanceDrive(direction.forward, 2 * one_tile, 0.5, 2, true);
 
     }
 }

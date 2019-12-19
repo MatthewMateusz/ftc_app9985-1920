@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -166,6 +168,27 @@ abstract public class Automation extends LinearOpMode {
         sleep(50);
     }
 
+    void sensorDrive(direction movement, double speed, double proximityLimit, DistanceSensor sensor, double timeout, boolean brake) {
+        setDriveMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setBrakes(brake);
+        runtime.reset();
+        if (movement.equals(direction.forward)) {
+            setDriveMotorPower(-speed, speed, -speed, speed);
+        } else if (movement.equals(direction.left)) {
+            setDriveMotorPower(-speed, -speed, speed, speed);
+        } else if (movement.equals(direction.right)) {
+            setDriveMotorPower(speed, speed, -speed, -speed);
+        } else {
+            setDriveMotorPower(speed, -speed, speed, -speed);
+        }
+        while (stopper.canRun() && opModeIsActive() &&
+            timeout > runtime.seconds() &&
+                (sensor.getDistance(DistanceUnit.CM) > proximityLimit) || sensor.getDistance(DistanceUnit.CM) != sensor.getDistance(DistanceUnit.CM)) {
+            //Do nothing
+        }
+        setDriveMotorPower(0);
+    }
+
     void distanceDrive(direction movement, double distance, double power, double timeout, boolean brake) {
         double encoderDistance = distance * encoder_cm;
         double frontLeft;
@@ -178,33 +201,22 @@ abstract public class Automation extends LinearOpMode {
             rearLeft   = -encoderDistance;
             rearRight  = encoderDistance;
         } else if (movement.equals(direction.left)) {
-            frontLeft  = encoderDistance;
+            frontLeft  = -encoderDistance;
             frontRight = -encoderDistance;
             rearLeft   = encoderDistance;
-            rearRight  = -encoderDistance;
+            rearRight  = encoderDistance;
         } else if (movement.equals(direction.right)) {
             frontLeft  = encoderDistance;
             frontRight = encoderDistance;
             rearLeft   = -encoderDistance;
             rearRight  = -encoderDistance;
         } else {
-            frontLeft  = -encoderDistance;
+            frontLeft  = encoderDistance;
             frontRight = -encoderDistance;
             rearLeft   = encoderDistance;
-            rearRight  = encoderDistance;
+            rearRight  = -encoderDistance;
         }
-        if (brake) {
-            hardware.motor_frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            hardware.motor_frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            hardware.motor_rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            hardware.motor_rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        } else {
-            hardware.motor_frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hardware.motor_frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hardware.motor_rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hardware.motor_rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        }
-
+        setBrakes(brake);
         encoderDrive(frontLeft, frontRight, rearLeft, rearRight, power, timeout);
     }
 
@@ -233,11 +245,11 @@ abstract public class Automation extends LinearOpMode {
             hardware.motor_rearLeft.setTargetPosition(newRearLeftTarget);
             hardware.motor_rearRight.setTargetPosition(newRearRightTarget);
 
-            setDriveMotorMode_all(DcMotor.RunMode.RUN_TO_POSITION);
+            setDriveMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
             runtime.reset();
 
             power = Range.clip(Math.abs(power), 0.0, 1.0);
-            setDriveMotorPower_all(power);
+            setDriveMotorPower(power);
 
             while (stopper.canRun() && opModeIsActive() &&
             runtime.seconds() < timeout &&
@@ -247,7 +259,7 @@ abstract public class Automation extends LinearOpMode {
             notAtTarget(hardware.motor_rearRight.getCurrentPosition(), newRearRightTarget)) {
                 //Do nothing
             }
-            setDriveMotorPower_all(0);
+            setDriveMotorPower(0);
         }
     }
 
@@ -359,7 +371,7 @@ abstract public class Automation extends LinearOpMode {
         hardware.motor_rearRight.setMode(rearRight);
     }
 
-    private void setDriveMotorMode_all(DcMotor.RunMode mode) {
+    private void setDriveMotorMode(DcMotor.RunMode mode) {
         hardware.motor_frontLeft.setMode(mode);
         hardware.motor_frontRight.setMode(mode);
         hardware.motor_rearLeft.setMode(mode);
@@ -373,7 +385,7 @@ abstract public class Automation extends LinearOpMode {
         hardware.motor_rearRight.setPower(rearRight);
     }
 
-    private void setDriveMotorPower_all(double power) {
+    private void setDriveMotorPower(double power) {
         hardware.motor_frontLeft.setPower(power);
         hardware.motor_frontRight.setPower(power);
         hardware.motor_rearLeft.setPower(power);
@@ -381,9 +393,23 @@ abstract public class Automation extends LinearOpMode {
     }
 
     void STOP() {
-        setDriveMotorPower_all(0);
+        setDriveMotorPower(0);
         hardware.armMotorLift.setPower(0);
         hardware.armMotorRotate.setPower(0);
+    }
+
+    void setBrakes(boolean brake){
+        if (brake) {
+            hardware.motor_frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            hardware.motor_frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            hardware.motor_rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            hardware.motor_rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        } else {
+            hardware.motor_frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hardware.motor_frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hardware.motor_rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hardware.motor_rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
     }
 
 }
