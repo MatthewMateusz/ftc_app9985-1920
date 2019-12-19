@@ -166,24 +166,49 @@ abstract public class Automation extends LinearOpMode {
         sleep(50);
     }
 
-    void distanceDrive(direction movement, double distance, double power, double timeout) {
+    void distanceDrive(direction movement, double distance, double power, double timeout, boolean brake) {
         double encoderDistance = distance * encoder_cm;
         double frontLeft;
         double frontRight;
         double rearLeft;
         double rearRight;
         if (movement.equals(direction.forward)) {
-
+            frontLeft  = -encoderDistance;
+            frontRight = encoderDistance;
+            rearLeft   = -encoderDistance;
+            rearRight  = encoderDistance;
         } else if (movement.equals(direction.left)) {
-
+            frontLeft  = encoderDistance;
+            frontRight = -encoderDistance;
+            rearLeft   = encoderDistance;
+            rearRight  = -encoderDistance;
         } else if (movement.equals(direction.right)) {
-
+            frontLeft  = encoderDistance;
+            frontRight = encoderDistance;
+            rearLeft   = -encoderDistance;
+            rearRight  = -encoderDistance;
         } else {
-
+            frontLeft  = -encoderDistance;
+            frontRight = -encoderDistance;
+            rearLeft   = encoderDistance;
+            rearRight  = encoderDistance;
         }
+        if (brake) {
+            hardware.motor_frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            hardware.motor_frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            hardware.motor_rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            hardware.motor_rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        } else {
+            hardware.motor_frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hardware.motor_frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hardware.motor_rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hardware.motor_rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+
+        encoderDrive(frontLeft, frontRight, rearLeft, rearRight, power, timeout);
     }
 
-    void encoderDrive(
+    private void encoderDrive(
             double frontLeftTicks,
             double frontRightTicks,
             double rearLeftTicks,
