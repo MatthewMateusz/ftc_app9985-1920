@@ -201,15 +201,15 @@ abstract public class Automation extends LinearOpMode {
             rearLeft   = -encoderDistance;
             rearRight  = encoderDistance;
         } else if (movement.equals(direction.left)) {
-            frontLeft  = -encoderDistance;
-            frontRight = -encoderDistance;
-            rearLeft   = encoderDistance;
-            rearRight  = encoderDistance;
-        } else if (movement.equals(direction.right)) {
             frontLeft  = encoderDistance;
             frontRight = encoderDistance;
             rearLeft   = -encoderDistance;
             rearRight  = -encoderDistance;
+        } else if (movement.equals(direction.right)) {
+            frontLeft  = -encoderDistance;
+            frontRight = -encoderDistance;
+            rearLeft   = encoderDistance;
+            rearRight  = encoderDistance;
         } else {
             frontLeft  = encoderDistance;
             frontRight = -encoderDistance;

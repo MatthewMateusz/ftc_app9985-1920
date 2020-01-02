@@ -10,7 +10,6 @@ public class CalibrateHardware extends Automation {
 
         setupHardware();
         waitForStart();
-        horizontal();
         initVuforia();
         initTfod();
         tfod.activate();
