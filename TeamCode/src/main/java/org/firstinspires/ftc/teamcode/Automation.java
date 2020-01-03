@@ -175,9 +175,9 @@ abstract public class Automation extends LinearOpMode {
         if (movement.equals(direction.forward)) {
             setDriveMotorPower(-speed, speed, -speed, speed);
         } else if (movement.equals(direction.left)) {
-            setDriveMotorPower(-speed, -speed, speed, speed);
-        } else if (movement.equals(direction.right)) {
             setDriveMotorPower(speed, speed, -speed, -speed);
+        } else if (movement.equals(direction.right)) {
+            setDriveMotorPower(-speed, -speed, speed, speed);
         } else {
             setDriveMotorPower(speed, -speed, speed, -speed);
         }
@@ -253,10 +253,10 @@ abstract public class Automation extends LinearOpMode {
 
             while (stopper.canRun() && opModeIsActive() &&
             runtime.seconds() < timeout &&
-            notAtTarget(hardware.motor_frontLeft.getCurrentPosition(), newFrontLeftTarget) &&
-            notAtTarget(hardware.motor_frontRight.getCurrentPosition(), newFrontRightTarget) &&
-            notAtTarget(hardware.motor_rearLeft.getCurrentPosition(), newRearLeftTarget) &&
-            notAtTarget(hardware.motor_rearRight.getCurrentPosition(), newRearRightTarget)) {
+            notAtTarget(hardware.motor_frontLeft.getCurrentPosition(), newFrontLeftTarget, (int) frontLeftTicks) &&
+            notAtTarget(hardware.motor_frontRight.getCurrentPosition(), newFrontRightTarget, (int) frontRightTicks) &&
+            notAtTarget(hardware.motor_rearLeft.getCurrentPosition(), newRearLeftTarget, (int) rearLeftTicks) &&
+            notAtTarget(hardware.motor_rearRight.getCurrentPosition(), newRearRightTarget, (int) rearRightTicks)) {
                 //Do nothing
             }
             setDriveMotorPower(0);
@@ -356,8 +356,8 @@ abstract public class Automation extends LinearOpMode {
         }
     }
 
-    private Boolean notAtTarget(int current, int destination) {
-        if (destination > 0) {
+    private Boolean notAtTarget(int current, int destination, int direction) {
+        if (direction > 0) {
             return current <= destination;
         } else {
             return current >= destination;
