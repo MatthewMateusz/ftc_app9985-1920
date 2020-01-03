@@ -69,41 +69,41 @@ public class Telop extends OpMode {
 
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        if (gamepad1.right_stick_y < 0) {
-            leftFrontSpeed = (gamepad1.right_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.right_stick_y + gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.right_stick_y - gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (-gamepad1.right_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+        if (gamepad1.left_stick_y < 0) {
+            leftFrontSpeed = (gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            rightFrontSpeed = (-gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            leftRearSpeed = (gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
+            rightRearSpeed = (-gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
 
             //robot.servo_frontLeft.setPosition(.5);
             //robot.servo_frontRight.setPosition(.5);
             //robot.servo_rearRight.setPosition(.5);
             //robot.servo_rearLeft.setPosition(.5);
         }
-        else if (gamepad1.right_stick_y > 0) {
-            leftFrontSpeed = (gamepad1.right_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.right_stick_y + gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.right_stick_y - gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (-gamepad1.right_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+        else if (gamepad1.left_stick_y > 0) {
+            leftFrontSpeed = (gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            rightFrontSpeed = (-gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            leftRearSpeed = (gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
+            rightRearSpeed = (-gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
 
             //robot.servo_frontLeft.setPosition(.5);
             //robot.servo_frontRight.setPosition(.5);
             //robot.servo_rearRight.setPosition(.5);
             //robot.servo_rearLeft.setPosition(.5);
         }
-        else if (gamepad1.right_stick_x > 0) {
-            leftFrontSpeed = (-gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+        else if (gamepad1.left_stick_x > 0) {
+            leftFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            rightFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            leftRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            rightRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
 
         }
 
-        else if (gamepad1.right_stick_x < 0) {
-            leftFrontSpeed = (-gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (gamepad1.right_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+        else if (gamepad1.left_stick_x < 0) {
+            leftFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            rightFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            leftRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            rightRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
 
         }
         else {
@@ -141,8 +141,8 @@ public class Telop extends OpMode {
         //robot.servo_frontRight.setPosition(-.5*gamepad1.right_stick_x+.5);
 
         if  (!robot.pressed(robot.armLimtLiftUp) && gamepad2.dpad_up) {
-                robot.armMotorLift.setPower(.75);
-            }
+            robot.armMotorLift.setPower(.75);
+        }
         else if (!robot.pressed(robot.armLimitLiftDown) && gamepad2.dpad_down)
         {robot.armMotorLift.setPower(-.4);}
         else
@@ -161,7 +161,7 @@ public class Telop extends OpMode {
 
         if (gamepad2.left_stick_y < 0 ) {
             robot.servo_GrabberLeft.setPosition(1);
-           }
+        }
 
         else if (gamepad2.left_stick_y > 0) {
             robot.servo_GrabberLeft.setPosition(.2);
@@ -221,9 +221,3 @@ public class Telop extends OpMode {
     public void stop() {
     }
 }
-
-
-
-
-
-
