@@ -51,12 +51,12 @@ public class Hardware {
     public DigitalChannel armLimitRotateUp = null;
     public DigitalChannel armLimitRotateDown = null;
     public DigitalChannel armLimitLiftDown = null;
-      public Rev2mDistanceSensor backDistance= null;
+    public Rev2mDistanceSensor backDistance= null;
     public DistanceSensor sensorDistanceUp = null;
     public Rev2mDistanceSensor sensorDistanceLeft = null;
     public DigitalChannel armLimtLiftUp = null;
 
-    WebcamName view;
+    public WebcamName view;
 
     HardwareMap hwMap = null;
 

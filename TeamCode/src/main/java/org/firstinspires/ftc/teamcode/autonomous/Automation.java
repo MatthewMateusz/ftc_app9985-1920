@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +11,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.Hardware;
+import org.firstinspires.ftc.teamcode.Stopper;
+import org.firstinspires.ftc.teamcode.secure;
 
 import java.util.List;
 
@@ -170,7 +173,6 @@ abstract public class Automation extends LinearOpMode {
 
     void sensorDrive(direction movement, double speed, double proximityLimit, DistanceSensor sensor, double timeout, boolean brake) {
         setDriveMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        setBrakes(brake);
         runtime.reset();
         if (movement.equals(direction.forward)) {
             setDriveMotorPower(-speed, speed, -speed, speed);
@@ -181,6 +183,7 @@ abstract public class Automation extends LinearOpMode {
         } else {
             setDriveMotorPower(speed, -speed, speed, -speed);
         }
+        setBrakes(brake);
         while (stopper.canRun() && opModeIsActive() &&
             timeout > runtime.seconds() &&
                 (sensor.getDistance(DistanceUnit.CM) > proximityLimit) || sensor.getDistance(DistanceUnit.CM) != sensor.getDistance(DistanceUnit.CM)) {
@@ -216,8 +219,7 @@ abstract public class Automation extends LinearOpMode {
             rearLeft   = encoderDistance;
             rearRight  = -encoderDistance;
         }
-        setBrakes(brake);
-        encoderDrive(frontLeft, frontRight, rearLeft, rearRight, power, timeout);
+        encoderDrive(frontLeft, frontRight, rearLeft, rearRight, power, timeout, brake);
     }
 
     private void encoderDrive(
@@ -226,7 +228,8 @@ abstract public class Automation extends LinearOpMode {
             double rearLeftTicks,
             double rearRightTicks,
             double power,
-            double timeout) {
+            double timeout,
+            boolean brake) {
         int newFrontLeftTarget;
         int newFrontRightTarget;
         int newRearLeftTarget;
@@ -250,6 +253,7 @@ abstract public class Automation extends LinearOpMode {
 
             power = Range.clip(Math.abs(power), 0.0, 1.0);
             setDriveMotorPower(power);
+            setBrakes(brake);
 
             while (stopper.canRun() && opModeIsActive() &&
             runtime.seconds() < timeout &&

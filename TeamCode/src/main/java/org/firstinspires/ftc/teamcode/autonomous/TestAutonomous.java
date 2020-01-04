@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-//@Disabled
+@Disabled
 @Autonomous(name="testing", group="testing")
 public class TestAutonomous extends Automation {
 
@@ -22,27 +23,27 @@ public class TestAutonomous extends Automation {
         //Phase A
         switch(location) {
             case left:
-                distanceDrive(direction.forward, 0.4 * one_tile, speed_half, 2, true);
+                distanceDrive(direction.forward, 0.4 * one_tile, speed_half, 1, true);
                 setGrabber(grabber.left, grabState.close);
                 break;
 
+            default:
             case middle:
-                distanceDrive(direction.forward, 0.4* one_tile, speed_half, 2, true);
-                break;
-
-            case right:
-                distanceDrive(direction.right, 0.4 * one_tile, speed_half, 2, true);
-                distanceDrive(direction.forward, 0.4*one_tile, speed_half, 2, true);
+                distanceDrive(direction.forward, 0.4* one_tile, speed_half, 1, true);
                 setGrabber(grabber.right, grabState.close);
                 break;
 
-            default:
+            case right:
+                distanceDrive(direction.right, 0.4 * one_tile, speed_half, 1, true);
+                distanceDrive(direction.forward, 0.4*one_tile, speed_half, 1, true);
+                setGrabber(grabber.right, grabState.close);
+                sleep(300);
                 break;
 
         }
 
         //Phase B
-        distanceDrive(direction.backward, 0.4 * one_tile, speed_half, 2, true);
+        distanceDrive(direction.backward, 0.4 * one_tile, speed_half, 1.5, true);
         RotateArm(true, 2.5);
         sensorDrive(direction.right, speed_half, 10, hardware.sensorDistanceUp, 2.5, false);
         distanceDrive(direction.right, 4 * one_tile, speed_half, 5, true);
