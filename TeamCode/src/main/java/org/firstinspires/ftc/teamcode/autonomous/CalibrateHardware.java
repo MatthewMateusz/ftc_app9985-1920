@@ -1,16 +1,17 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.autonomous.Automation;
+
 @Autonomous(name="setup", group = "testing")
-public class CalibrateHardware extends FunctionLibrary {
+public class CalibrateHardware extends Automation {
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         setupHardware();
         waitForStart();
-        horizontal();
         initVuforia();
         initTfod();
         tfod.activate();
