@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.old;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Disabled
-@Autonomous(name="testing", group="testing")
-public class TestAutonomous extends Automation {
+@Autonomous(name="Red Autonomous", group="Normal")
+public class RedAutonomous extends Automation {
 
     @Override
     public void runOpMode() throws InterruptedException {
