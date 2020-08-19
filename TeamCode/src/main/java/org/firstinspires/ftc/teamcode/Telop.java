@@ -58,22 +58,17 @@ public class Telop extends OpMode {
         double rightFrontSpeed;
         double leftRearSpeed;
         double rightRearSpeed;
-        double speedFactor;
-        double liftSpeed = 0;
-        double liftSpeedArm = 0;
 
-        if (gamepad1.right_bumper)
-            speedFactor = 0.3;
-        else
-            speedFactor = 1;
+
+
 
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         if (gamepad1.left_stick_y < 0) {
-            leftFrontSpeed = (gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (-gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
+            leftFrontSpeed = (gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger);
+            rightFrontSpeed = (-gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger);
+            leftRearSpeed = (gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger);
+            rightRearSpeed = (-gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger);
 
             //robot.servo_frontLeft.setPosition(.5);
             //robot.servo_frontRight.setPosition(.5);
@@ -81,10 +76,10 @@ public class Telop extends OpMode {
             //robot.servo_rearLeft.setPosition(.5);
         }
         else if (gamepad1.left_stick_y > 0) {
-            leftFrontSpeed = (gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (-gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger) * speedFactor;
+            leftFrontSpeed = (gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger);
+            rightFrontSpeed = (-gamepad1.left_stick_y + gamepad1.left_trigger - gamepad1.right_trigger);
+            leftRearSpeed = (gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger);
+            rightRearSpeed = (-gamepad1.left_stick_y - gamepad1.left_trigger + gamepad1.right_trigger);
 
             //robot.servo_frontLeft.setPosition(.5);
             //robot.servo_frontRight.setPosition(.5);
@@ -92,31 +87,36 @@ public class Telop extends OpMode {
             //robot.servo_rearLeft.setPosition(.5);
         }
         else if (gamepad1.left_stick_x > 0) {
-            leftFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            leftFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
+            rightFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
+            leftRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
+            rightRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
 
         }
 
         else if (gamepad1.left_stick_x < 0) {
-            leftFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            leftFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
+            rightFrontSpeed = (-gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
+            leftRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
+            rightRearSpeed = (gamepad1.left_stick_x + gamepad1.left_trigger - gamepad1.right_trigger);
 
         }
         else {
-            leftFrontSpeed = (gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightFrontSpeed = (gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            leftRearSpeed = (gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
-            rightRearSpeed = (gamepad1.left_trigger - gamepad1.right_trigger) * speedFactor;
+            leftFrontSpeed = (gamepad1.left_trigger - gamepad1.right_trigger);
+            rightFrontSpeed = (gamepad1.left_trigger - gamepad1.right_trigger);
+            leftRearSpeed = (gamepad1.left_trigger - gamepad1.right_trigger);
+            rightRearSpeed = (gamepad1.left_trigger - gamepad1.right_trigger);
 
             //robot.servo_frontLeft.setPosition(1);
             //robot.servo_frontRight.setPosition(0);
             //robot.servo_rearRight.setPosition(0);
             //robot.servo_rearLeft.setPosition(1);
         }
+
+        if (gamepad1.y)
+            robot.servo_left_cont.setPower(.2);
+        else
+            robot.servo_left_cont.setPower(0);
 
 
 
@@ -140,52 +140,7 @@ public class Telop extends OpMode {
         //robot.servo_rearLeft.setPosition(-.5*gamepad1.right_stick_x+.5);
         //robot.servo_frontRight.setPosition(-.5*gamepad1.right_stick_x+.5);
 
-        if  (!robot.pressed(robot.armLimtLiftUp) && gamepad2.dpad_up) {
-            robot.armMotorLift.setPower(.75);
-        }
-        else if (!robot.pressed(robot.armLimitLiftDown) && gamepad2.dpad_down)
-        {robot.armMotorLift.setPower(-.4);}
-        else
-        {robot.armMotorLift.setPower(0);}
-
-
-        if (gamepad2.y && !robot.pressed(robot.armLimitRotateDown)) {
-            robot.armMotorRotate.setPower(.7);
-        }
-        else if (gamepad2.a && !robot.pressed(robot.armLimitRotateUp)) {
-            robot.armMotorRotate.setPower(-.7);
-        }
-        else {
-            robot.armMotorRotate.setPower(0);
-        }
-
-        if (gamepad2.left_stick_y < 0 ) {
-            robot.servo_GrabberLeft.setPosition(1);
-        }
-
-        else if (gamepad2.left_stick_y > 0) {
-            robot.servo_GrabberLeft.setPosition(.2);
-        }
-
-        if (gamepad2.right_stick_y < 0 ) {
-            robot.servo_GrabberRight.setPosition(1);
-        }
-
-        else if (gamepad2.right_stick_y > 0) {
-            robot.servo_GrabberRight.setPosition(.2);
-        }
-
-        if (gamepad1.dpad_up) {
-            robot.servo_CapstoneRelease.setPower(-.05);
-        }
-        else if (gamepad2.back) {
-            robot.servo_CapstoneRelease.setPower(1);
-        }
-        else {
-            robot.servo_CapstoneRelease.setPower(.05);
-
-        }
-        //Moves front servos
+                //Moves front servos
         //if (gamepad2.dpad_left)
         //  servoOffsetH += servoSpeedH;
         //else if (gamepad2.dpad_right)
@@ -206,9 +161,7 @@ public class Telop extends OpMode {
         // telemetry.addData("vert Servo",  "position = %.2f",robot.steeringstriaght + servoOffsetV);
         //telemetry.addData("Servo Offset H","Offset H = %.2f", servoOffsetH);
         //telemetry.addData("Servo Offset V","Offset V = %.2f", servoOffsetV);
-        telemetry.addData("Distance Up (Inch)", String.format(Locale.US, "%.02f", robot.sensorDistanceUp.getDistance(DistanceUnit.INCH)));
-        telemetry.addData("Distance Left Front (Inch)", String.format(Locale.US, "%.02f", robot.sensorDistanceLeft.getDistance(DistanceUnit.INCH)));
-        telemetry.addData("Distance Back (Inch)", String.format(Locale.US, "&.02f", robot.backDistance.getDistance(DistanceUnit.INCH)));
+
         //telemetry.addData("left",  "%.2f", left);
         telemetry.update();
 

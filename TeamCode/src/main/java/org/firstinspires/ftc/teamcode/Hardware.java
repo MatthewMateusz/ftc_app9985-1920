@@ -32,31 +32,21 @@ public class Hardware {
     public DcMotor motor_frontRight = null;
     public DcMotor motor_rearLeft = null;
     public DcMotor motor_rearRight = null;
-    public DcMotor armMotorRotate = null;
-    public DcMotor armMotorLift = null;
+
 
 
 
     //Servo
-    public Servo servo_frontLeft = null;
-    public Servo servo_frontRight = null;
-    public Servo servo_rearLeft = null;
-    public Servo servo_rearRight = null;
-    public Servo servo_GrabberLeft = null;
-    public Servo servo_GrabberRight = null;
-    public CRServo servo_CapstoneRelease = null;
+
+    public CRServo servo_left_cont = null;
 
     //Sensors
 
-    public DigitalChannel armLimitRotateUp = null;
-    public DigitalChannel armLimitRotateDown = null;
-    public DigitalChannel armLimitLiftDown = null;
-    public Rev2mDistanceSensor backDistance= null;
-    public DistanceSensor sensorDistanceUp = null;
-    public Rev2mDistanceSensor sensorDistanceLeft = null;
-    public DigitalChannel armLimtLiftUp = null;
 
-    public WebcamName view;
+    public DigitalChannel touch_Front = null;
+    public DigitalChannel touch_Rear = null;
+
+    WebcamName view;
 
     HardwareMap hwMap = null;
 
@@ -71,27 +61,16 @@ public class Hardware {
         motor_frontRight = setupMotor(hwMap,"motor_frontRight", forwardDirection, brakeZero);
         motor_rearLeft = setupMotor(hwMap,"motor_rearLeft", forwardDirection, brakeZero);
         motor_rearRight = setupMotor(hwMap,"motor_rearRight", forwardDirection, brakeZero);
-        armMotorRotate = setupMotor(hwMap,"armMotorRotate", forwardDirection, brakeZero);
-        armMotorLift = setupMotor(hwMap,"armMotorLift",forwardDirection,brakeZero);
 
-        servo_frontLeft = setupServo(hwMap, "servo_frontLeft", initPosition);
-        servo_frontRight = setupServo(hwMap, "servo_frontRight", initPosition);
-        servo_rearLeft = setupServo(hwMap, "servo_rearLeft", initPosition);
-        servo_rearRight = setupServo(hwMap, "servo_rearRight", initPosition);
-        servo_GrabberLeft = setupServo(hwMap, "servo_GrabberLeft", .25);
-        servo_GrabberRight = setupServo(hwMap, "servo_GrabberRight", .25);
-        servo_CapstoneRelease = setupContinuousServo(hwMap,"servo_CapstoneRelease",.05);
 
-        armLimitRotateUp = hwMap.get(DigitalChannel.class, "armLimitRotateUp");
-        armLimitRotateDown = hwMap.get(DigitalChannel.class,"armLimitRotateDown");
-        armLimitLiftDown = hwMap.get(DigitalChannel.class, "armLimitLiftDown");
-        armLimtLiftUp = hwMap.get(DigitalChannel.class,"armLimitLiftUp");
 
-        backDistance = (Rev2mDistanceSensor) hwMap.get(DistanceSensor.class, "backDistanceSensor");
-        sensorDistanceUp = hwMap.get(DistanceSensor.class, "sensor_color_dist_up");
-        sensorDistanceLeft = (Rev2mDistanceSensor)hwMap.get(DistanceSensor.class, "leftFrontDistanceSensor");
+        servo_left_cont = setupContinuousServo(hwMap,"servo_left_cont",-.05);
 
-        view = hwMap.get(WebcamName.class, "The Viewer");
+        touch_Front = hwMap.get(DigitalChannel.class, "touch_front");
+        touch_Rear = hwMap.get(DigitalChannel.class,"touch_rear");
+
+
+
 
     }
 
