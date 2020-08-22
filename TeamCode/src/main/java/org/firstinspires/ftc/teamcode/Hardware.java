@@ -4,6 +4,8 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,14 +15,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 public class Hardware {
-
-    //Variables to improve readability of code
-    public DcMotor.Direction forwardDirection = DcMotor.Direction.FORWARD;
-    public DcMotor.Direction reverseDirection = DcMotor.Direction.REVERSE;
-
-    public DcMotor.ZeroPowerBehavior brakeZero = DcMotor.ZeroPowerBehavior.BRAKE;
-    public DcMotor.ZeroPowerBehavior floatZero = DcMotor.ZeroPowerBehavior.FLOAT;
-
 
     //Default init variables. What servos and other hardware init to
     public static final double initPosition = 0.5;
@@ -57,10 +51,10 @@ public class Hardware {
     public void init(HardwareMap hwMap) {
         this.hwMap = hwMap;
 
-        motor_frontLeft = setupMotor(hwMap,"motor_frontLeft", forwardDirection, brakeZero);
-        motor_frontRight = setupMotor(hwMap,"motor_frontRight", forwardDirection, brakeZero);
-        motor_rearLeft = setupMotor(hwMap,"motor_rearLeft", forwardDirection, brakeZero);
-        motor_rearRight = setupMotor(hwMap,"motor_rearRight", forwardDirection, brakeZero);
+        motor_frontLeft = setupMotor(hwMap,"motor_frontLeft", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
+        motor_frontRight = setupMotor(hwMap,"motor_frontRight", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
+        motor_rearLeft = setupMotor(hwMap,"motor_rearLeft", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
+        motor_rearRight = setupMotor(hwMap,"motor_rearRight", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
 
 
 
