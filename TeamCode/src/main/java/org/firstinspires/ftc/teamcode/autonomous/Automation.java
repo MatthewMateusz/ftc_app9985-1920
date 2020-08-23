@@ -1,13 +1,22 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware;
 
 public abstract class Automation extends LinearOpMode {
 
     //Vars
+    enum Direction {
+        FORWARD,
+        LEFT,
+        RIGHT,
+        BACKWARD
+    }
+
 
     //NeveRest 40 Gearbox
     private static final int encoder_tick_per_revolution = 280;
@@ -67,5 +76,80 @@ public abstract class Automation extends LinearOpMode {
     */
     public void auto_init() {};
 
+
+
+    void encoderDrive(
+            double frontLeftTicks,
+            double frontRightTicks,
+            double rearLeftTicks,
+            double rearRightTicks,
+            double power,
+            double timeout,
+            boolean brake
+    ) {
+        int frontLeftTarget;
+        int frontRightTarget;
+        int rearLeftTarget;
+        int rearRightTarget;
+
+        if (opModeIsActive()) {
+
+            //Calc targets
+            frontLeftTarget = hardware.motor_frontLeft.getCurrentPosition() + (int) frontLeftTicks;
+            frontRightTarget = hardware.motor_frontRight.getCurrentPosition() + (int) frontLeftTicks;
+            rearLeftTarget = hardware.motor_rearLeft.getCurrentPosition() + (int) frontLeftTicks;
+            rearRightTarget = hardware.motor_rearRight.getCurrentPosition() + (int) frontLeftTicks;
+
+            //Set targets
+            hardware.motor_frontLeft.setTargetPosition(frontLeftTarget);
+            hardware.motor_frontRight.setTargetPosition(frontRightTarget);
+            hardware.motor_rearLeft.setTargetPosition(rearLeftTarget);
+            hardware.motor_rearRight.setTargetPosition(rearRightTarget);
+
+            setDriveMotorMode(RunMode.RUN_TO_POSITION);
+
+            setDriveMotorSpeed(Range.clip(Math.abs(power), 0.0, 1.0));
+
+            runtime.reset();
+
+            while (
+                    opModeIsActive() &&
+                    notAtTarget(hardware.motor_frontLeft.getCurrentPosition(), frontLeftTarget, (int) frontLeftTicks) &&
+                    notAtTarget(hardware.motor_frontRight.getCurrentPosition(), frontRightTarget, (int) frontRightTicks) &&
+                    notAtTarget(hardware.motor_rearLeft.getCurrentPosition(), rearLeftTarget, (int) rearLeftTicks) &&
+                    notAtTarget(hardware.motor_rearRight.getCurrentPosition(), rearRightTarget, (int) rearRightTicks) &&
+                    runtime.seconds() < timeout
+            ) {
+                idle();
+            }
+            setDriveMotorSpeed(0);
+        }
+    }
+
+    private void setDriveMotorMode(RunMode mode) {
+        hardware.motor_frontLeft.setMode(mode);
+        hardware.motor_frontRight.setMode(mode);
+        hardware.motor_rearLeft.setMode(mode);
+        hardware.motor_rearRight.setMode(mode);
+    }
+
+    private void setDriveMotorSpeed(double speed) {
+        hardware.motor_frontLeft.setPower(speed);
+        hardware.motor_frontRight.setPower(speed);
+        hardware.motor_rearLeft.setPower(speed);
+        hardware.motor_rearRight.setPower(speed);
+    }
+
+    private Boolean notAtTarget(
+            int current,
+            int destination,
+            int direction
+    ) {
+        if (direction > 0) {
+            return current <= destination;
+        } else {
+            return current >= destination;
+        }
+    }
 
 }
