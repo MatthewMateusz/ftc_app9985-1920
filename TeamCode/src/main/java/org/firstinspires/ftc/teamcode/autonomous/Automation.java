@@ -67,7 +67,7 @@ public abstract class Automation extends LinearOpMode {
     ** This method is where the user puts its instructions for autonomous mode.
     ** It is required since there is not point to an autonomous with no instructions
     */
-    public abstract void instruction();
+    public abstract void instruction() throws InterruptedException;
 
     /*
     ** This method is where the user puts its custom init code.
@@ -108,7 +108,7 @@ public abstract class Automation extends LinearOpMode {
 
             setDriveMotorMode(RunMode.RUN_TO_POSITION);
 
-            setDriveMotorSpeed(Range.clip(Math.abs(power), 0.0, 1.0));
+            setDriveMotorSpeed(power);
 
             runtime.reset();
 
@@ -150,6 +150,28 @@ public abstract class Automation extends LinearOpMode {
         } else {
             return current >= destination;
         }
+    }
+
+    void runToTop() {
+        hardware.servo_left_cont.setPower(0.1);
+        while (
+                opModeIsActive() &&
+                !hardware.pressed(hardware.touch_Front)
+        ) {
+            idle();
+        }
+        hardware.servo_left_cont.setPower(-0.05);
+    }
+
+    void runToRear() {
+        hardware.servo_left_cont.setPower(-0.1);
+        while (
+                opModeIsActive() &&
+                        !hardware.pressed(hardware.touch_Rear)
+        ) {
+            idle();
+        }
+        hardware.servo_left_cont.setPower(-0.05);
     }
 
 }
