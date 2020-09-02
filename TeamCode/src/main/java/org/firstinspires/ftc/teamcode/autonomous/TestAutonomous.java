@@ -10,7 +10,7 @@ public class TestAutonomous extends Automation {
     public void instruction() throws InterruptedException {
 
         moveServo.start();
-        //encoderDrive(10000, 10000, 10000, 10000, 0.1, 30, true);
+        encoderDrive(10000, 10000, 10000, 10000, 0.1, 30, true);
         moveServo.join();
 
     }
