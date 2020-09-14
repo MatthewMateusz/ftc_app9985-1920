@@ -77,6 +77,40 @@ public abstract class Automation extends LinearOpMode {
     public void auto_init() {};
 
 
+    /*
+    **
+    */
+    void rotate(double angle, double power, double timeout, boolean brake) {
+
+    }
+
+
+    /*
+    **
+    */
+    void driveDistance(double distance, double angle, double power, double timeout, boolean brake) {
+        power = Range.clip(Math.abs(power), 0.0, 1.0);
+    }
+
+
+    /*
+    **
+    */
+    void accurateDriveOLD(double vertical, double horizontal, double power, double timeout, boolean brake) {
+        if (opModeIsActive()) {
+            double speed = (Math.abs(power));
+
+            double frontLeftSpeed  = 0;
+            double frontRightSpeed = 0;
+            double rearLeftSpeed   = 0;
+            double rearRightSpeed  = 0;
+
+
+
+        }
+    }
+
+
 
     void encoderDrive(
             double frontLeftTicks,

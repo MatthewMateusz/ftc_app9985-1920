@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -35,7 +36,7 @@ public class Hardware {
     public CRServo servo_left_cont = null;
 
     //Sensors
-
+    public BNO055IMU imu;
 
     public DigitalChannel touch_Front = null;
     public DigitalChannel touch_Rear = null;
