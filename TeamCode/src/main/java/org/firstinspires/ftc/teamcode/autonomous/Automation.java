@@ -1,10 +1,19 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.Hardware;
 
 public abstract class Automation extends LinearOpMode {
@@ -39,6 +48,19 @@ public abstract class Automation extends LinearOpMode {
     static final double timeout_short  = 3;
     static final double timeout_medium = 5;
     static final double timeout_long   = 10;
+
+    //Delays
+    static final long rotate_delay = 100;
+    static final long drive_delay = 100;
+
+    //Rotation stuff
+    Orientation lastAngles = new Orientation();
+    double globalAngle;
+
+    //Drive straight stuff
+    PIDController pidRotate = new PIDController(0.003, 0.0003, 0);
+    PIDController pidDrive =  new PIDController(0.05, 0, 0);
+
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -76,20 +98,171 @@ public abstract class Automation extends LinearOpMode {
     */
     public void auto_init() {};
 
+    private void initIMU() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        hardware.imu.initialize(parameters);
+
+        while (!hardware.imu.isGyroCalibrated() && !hardware.imu.isAccelerometerCalibrated()) {
+            idle();
+        }
+    }
+
+    private void resetAngle() {
+        lastAngles = hardware.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        globalAngle = 0;
+    }
+
+    private double getAngle() {
+        Orientation angles = hardware.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYX, AngleUnit.DEGREES);
+        double deltaAngle = angles.firstAngle -lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+        else {
+            //Do nothing;
+        }
+        globalAngle += deltaAngle;
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+
 
     /*
     **
     */
     void rotate(double angle, double power, double timeout, boolean brake) {
+        resetAngle();
 
+        if (Math.abs(angle) > 359) angle = (int) Math.copySign(359, angle);
+
+        pidRotate.reset();
+        pidRotate.setSetpoint(angle);
+        pidRotate.setInputRange(0, angle);
+        pidRotate.setOutputRange(0, power);
+        pidRotate.setTolerance(1);
+        pidRotate.setEnable(true);
+
+
+        setBrakeMode(brake);
+        if (opModeIsActive()) {
+            runtime.reset();
+            if (angle < 0) {
+                while(opModeIsActive() && getAngle() == 0) {
+                    hardware.motor_frontLeft.setPower(power);
+                    hardware.motor_frontRight.setPower(power);
+                    hardware.motor_rearLeft.setPower(-power);
+                    hardware.motor_rearRight.setPower(-power);
+                    idle();
+                }
+
+                do {
+                    power = pidRotate.performPID(getAngle());
+                    hardware.motor_frontLeft.setPower(power);
+                    hardware.motor_frontRight.setPower(power);
+                    hardware.motor_rearLeft.setPower(-power);
+                    hardware.motor_rearRight.setPower(-power);
+                    idle();
+                } while (opModeIsActive() && !pidRotate.onTarget() && runtime.seconds() < timeout);
+            } else {
+                do {
+                    power = pidRotate.performPID(getAngle());
+                    hardware.motor_frontLeft.setPower(-power);
+                    hardware.motor_frontRight.setPower(-power);
+                    hardware.motor_rearLeft.setPower(power);
+                    hardware.motor_rearRight.setPower(power);
+                    idle();
+                } while (opModeIsActive() && !pidRotate.onTarget() && runtime.seconds() < timeout);
+            }
+
+            hardware.motor_frontLeft.setPower(0);
+            hardware.motor_frontRight.setPower(0);
+            hardware.motor_rearLeft.setPower(0);
+            hardware.motor_rearRight.setPower(0);
+
+            resetAngle();
+            sleep(rotate_delay);
+        }
     }
 
 
     /*
     **
     */
-    void driveDistance(double distance, double angle, double power, double timeout, boolean brake) {
+    void driveIMUDistance(double distance, double angle, double power, double timeout, boolean brake) {
+        angle = Range.clip(angle, -180, 180);
         power = Range.clip(Math.abs(power), 0.0, 1.0);
+        Position start = hardware.imu.getPosition();
+
+        resetAngle();
+
+        pidDrive.reset();
+        pidDrive.setSetpoint(0);
+        pidDrive.setOutputRange(0, power);
+        pidDrive.setInputRange(-90, 90);
+        pidDrive.setEnable(true);
+
+        setBrakeMode(brake);
+        if (opModeIsActive()) {
+            double frontLeft;
+            double frontRight;
+            double rearLeft;
+            double rearRight;
+
+            if (angle <= -90.0) {
+                frontLeft  = -power;
+                frontRight = ((-1/45) * angle - 3) * power;
+                rearLeft   = ((-1/45) * angle - 3) * power;
+                rearRight  = -power;
+            } else if (-90.0 <= angle && angle <= 0) {
+                frontLeft = ((1/45) * angle + 1) * power;
+                frontRight = -power;
+                rearLeft = -power;
+                rearRight = ((1/45) * angle + 1) * power;
+            } else if (0 <= angle && angle <= 90) {
+                frontLeft = power;
+                frontRight = ((1/45) * angle - 1) * power;
+                rearLeft = ((1/45) * angle - 1) * power;
+                rearRight = power;
+            } else /*because of clip -> 90 <= angle <= 180*/{
+                frontLeft = ((-1/45) * angle + 3) * power;
+                frontRight = power;
+                rearLeft = power;
+                rearRight = ((-1/45) * angle + 3) * power;
+            }
+
+            runtime.reset();
+            do {
+                double correction = pidDrive.performPID(getAngle());
+                hardware.motor_frontLeft.setPower(frontLeft + correction);
+                hardware.motor_frontRight.setPower(frontRight + correction);
+                hardware.motor_rearLeft.setPower(rearLeft - correction);
+                hardware.motor_rearRight.setPower(rearRight - correction);
+                idle();
+            } while (opModeIsActive() && runtime.seconds() < timeout && distance(start, hardware.imu.getPosition()) <= distance);
+        }
+
+        hardware.motor_frontLeft.setPower(0);
+        hardware.motor_frontRight.setPower(0);
+        hardware.motor_rearLeft.setPower(0);
+        hardware.motor_rearRight.setPower(0);
+
+        resetAngle();
+        sleep(drive_delay);
+    }
+
+    private double distance(Position start, Position end) {
+        start.toUnit(DistanceUnit.CM);
+        end.toUnit(DistanceUnit.CM);
+        return Math.sqrt(((end.x - start.x) * (end.x - start.x))+((end.y - start.y) * (end.y - start.y))+((end.z - start.z) * (end.z - start.z)));
     }
 
 
@@ -206,6 +379,20 @@ public abstract class Automation extends LinearOpMode {
             idle();
         }
         hardware.servo_left_cont.setPower(-0.05);
+    }
+
+    void setBrakeMode(boolean brake) {
+        if (brake) {
+            hardware.motor_frontLeft.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+            hardware.motor_frontRight.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+            hardware.motor_rearLeft.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+            hardware.motor_rearRight.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+        } else {
+            hardware.motor_frontLeft.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+            hardware.motor_frontRight.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+            hardware.motor_rearLeft.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+            hardware.motor_rearRight.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+        }
     }
 
 }
