@@ -13,13 +13,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class TestAutonomous extends Automation {
 
     public void instruction() throws InterruptedException {
-        while (opModeIsActive()) {
-            Orientation angles = hardware.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+//        while (false) {
+//            Orientation angles = hardware.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+//
+//            telemetry.addData("IMU", "INFO");
+//            telemetry.addData("Gyro X", angles.firstAngle);
+//            telemetry.addData("Gyro Y", angles.secondAngle);
+//            telemetry.addData("Gyro Z", angles.thirdAngle);
+//            telemetry.update();
+//        }
 
-            telemetry.addData("IMU", "INFO");
-            telemetry.addData("Gyro X", angles.firstAngle);
-            telemetry.addData("Gyro Y", angles.secondAngle);
-            telemetry.addData("Gyro Z", angles.thirdAngle);
-        }
+        rotate(180, 0.5, 5, true);
+        driveIMUDistance(100, 0, 0.5, 10, true);
     }
 }

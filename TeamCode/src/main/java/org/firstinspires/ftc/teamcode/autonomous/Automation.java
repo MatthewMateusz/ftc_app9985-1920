@@ -71,6 +71,7 @@ public abstract class Automation extends LinearOpMode {
     public final void runOpMode() throws InterruptedException {
         //Do universal init stuff
         hardware.init(hardwareMap);
+        initIMU();
 
         //specific autonomous init code
         auto_init();
@@ -118,7 +119,7 @@ public abstract class Automation extends LinearOpMode {
     }
 
     private double getAngle() {
-        Orientation angles = hardware.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYX, AngleUnit.DEGREES);
+        Orientation angles = hardware.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double deltaAngle = angles.firstAngle -lastAngles.firstAngle;
 
         if (deltaAngle < -180)

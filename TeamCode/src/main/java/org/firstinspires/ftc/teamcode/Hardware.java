@@ -52,10 +52,10 @@ public class Hardware {
     public void init(HardwareMap hwMap) {
         this.hwMap = hwMap;
 
-        motor_frontLeft = setupMotor(hwMap,"motor_frontLeft", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
+        motor_frontLeft = setupMotor(hwMap,"motor_frontLeft", Direction.REVERSE, ZeroPowerBehavior.BRAKE);
         motor_frontRight = setupMotor(hwMap,"motor_frontRight", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
         motor_rearLeft = setupMotor(hwMap,"motor_rearLeft", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
-        motor_rearRight = setupMotor(hwMap,"motor_rearRight", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
+        motor_rearRight = setupMotor(hwMap,"motor_rearRight", Direction.REVERSE, ZeroPowerBehavior.BRAKE);
 
 
 
@@ -64,6 +64,7 @@ public class Hardware {
         touch_Front = hwMap.get(DigitalChannel.class, "touch_front");
         touch_Rear = hwMap.get(DigitalChannel.class,"touch_rear");
 
+        imu = hwMap.get(BNO055IMU.class, "imu");
 
 
 
