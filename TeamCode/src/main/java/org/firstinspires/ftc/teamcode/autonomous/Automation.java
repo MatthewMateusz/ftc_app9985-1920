@@ -120,7 +120,7 @@ public abstract class Automation extends LinearOpMode {
 
     private double getAngle() {
         Orientation angles = hardware.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double deltaAngle = angles.firstAngle -lastAngles.firstAngle;
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
         if (deltaAngle < -180)
             deltaAngle += 360;
@@ -184,12 +184,13 @@ public abstract class Automation extends LinearOpMode {
                 } while (opModeIsActive() && !pidRotate.onTarget() && runtime.seconds() < timeout);
             }
 
+            telemetry.addData("test:", pidRotate.onTarget());
+            telemetry.update();
             hardware.motor_frontLeft.setPower(0);
             hardware.motor_frontRight.setPower(0);
             hardware.motor_rearLeft.setPower(0);
             hardware.motor_rearRight.setPower(0);
 
-            resetAngle();
             sleep(rotate_delay);
         }
     }

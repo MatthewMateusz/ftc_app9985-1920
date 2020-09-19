@@ -101,14 +101,14 @@ public class PIDController {
     }
 
     public void setInputRange(double minInput, double maxInput) {
-        this.minInput = Math.abs(minInput);
-        this.maxInput = Math.abs(maxInput);
+        this.minInput = minInput;
+        this.maxInput = maxInput;
         setSetpoint(setpoint);
     }
 
-    public void setOutputRange(double minOutput, double minInput) {
-        this.minOutput = Math.abs(minOutput);
-        this.maxOutput = Math.abs(maxOutput);
+    public void setOutputRange(double minOutput, double maxOutput) {
+        this.minOutput = minOutput;
+        this.maxOutput = maxOutput;
     }
 
     public void setSetpoint( double setpoint) {
@@ -120,7 +120,7 @@ public class PIDController {
             else if (Math.abs(setpoint) < minInput)
                 setpoint = minInput * sign;
             else
-                setpoint = setpoint;
+                this.setpoint = setpoint;
         }
     }
 
