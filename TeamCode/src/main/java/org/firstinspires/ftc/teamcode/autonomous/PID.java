@@ -7,15 +7,14 @@ public class PID {
 
     private double tolerance;
 
-    private double minIn;
-    private double maxIn;
+    private double setpoint;
 
-    private double minOut;
-    private double maxOut;
+    private double bias = 0;
+
+    private double deltaT;
 
     private double prevError;
-    private double prevI;
-
+    private double prevIntegral;
 
     public PID (double p, double i, double d) {
         P = p;
@@ -23,6 +22,35 @@ public class PID {
         D = d;
     }
 
+    public void setDeltaT(double dt) {
+        deltaT = dt;
+    }
 
+    public double getDeltaT() {
+        return deltaT;
+    }
 
+    public void setTolerance(double tol) {
+        tolerance = tol;
+    }
+
+    public void setPoint(double point) {
+        setpoint = point;
+    }
+
+    public double doPID(double input) {
+        double error = setpoint - input;
+        double integral = prevIntegral + error * deltaT;
+        double derivative = (error - prevError) / deltaT;
+
+        double output = P * error + I * integral + D * derivative + bias;
+
+        prevError = error;
+        prevIntegral = integral;
+        return output;
+    }
+
+    public boolean atTarget(double input) {
+        return Math.abs((setpoint - input)/setpoint) < tolerance;
+    }
 }

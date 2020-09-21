@@ -58,8 +58,8 @@ public abstract class Automation extends LinearOpMode {
     double globalAngle;
 
     //Drive straight stuff
-    PIDController pidRotate = new PIDController(0.003, 0.0003, 0);
-    PIDController pidDrive =  new PIDController(0.05, 0, 0);
+    PID controlRotate = new PID(0.003, 0.0003, 0);
+    PID controlDrive = new PID(0.05, 0, 0);
 
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -145,12 +145,9 @@ public abstract class Automation extends LinearOpMode {
 
         if (Math.abs(angle) > 359) angle = (int) Math.copySign(359, angle);
 
-        pidRotate.reset();
-        pidRotate.setSetpoint(angle);
-        pidRotate.setInputRange(0, angle);
-        pidRotate.setOutputRange(0, power);
-        pidRotate.setTolerance(1);
-        pidRotate.setEnable(true);
+        controlRotate.setPoint(angle);
+        controlRotate.setTolerance(0.01);
+        controlRotate.setDeltaT(1);
 
 
         setBrakeMode(brake);
@@ -162,30 +159,27 @@ public abstract class Automation extends LinearOpMode {
                     hardware.motor_frontRight.setPower(power);
                     hardware.motor_rearLeft.setPower(-power);
                     hardware.motor_rearRight.setPower(-power);
-                    idle();
+                    sleep((long) controlRotate.getDeltaT());
                 }
 
                 do {
-                    power = pidRotate.performPID(getAngle());
+                    power = Range.clip(controlRotate.doPID(getAngle()), 0.0, 1.0);
                     hardware.motor_frontLeft.setPower(power);
                     hardware.motor_frontRight.setPower(power);
                     hardware.motor_rearLeft.setPower(-power);
                     hardware.motor_rearRight.setPower(-power);
-                    idle();
-                } while (opModeIsActive() && !pidRotate.onTarget() && runtime.seconds() < timeout);
+                    sleep((long) controlRotate.getDeltaT());
+                } while (opModeIsActive() && !controlRotate.atTarget(getAngle()) && runtime.seconds() < timeout);
             } else {
                 do {
-                    power = pidRotate.performPID(getAngle());
+                    power = Range.clip(controlRotate.doPID(getAngle()), 0.0, 1.0);
                     hardware.motor_frontLeft.setPower(-power);
                     hardware.motor_frontRight.setPower(-power);
                     hardware.motor_rearLeft.setPower(power);
                     hardware.motor_rearRight.setPower(power);
-                    idle();
-                } while (opModeIsActive() && !pidRotate.onTarget() && runtime.seconds() < timeout);
+                    sleep((long) controlRotate.getDeltaT());
+                } while (opModeIsActive() && !controlRotate.atTarget(getAngle()) && runtime.seconds() < timeout);
             }
-
-            telemetry.addData("test:", pidRotate.onTarget());
-            telemetry.update();
             hardware.motor_frontLeft.setPower(0);
             hardware.motor_frontRight.setPower(0);
             hardware.motor_rearLeft.setPower(0);
@@ -206,11 +200,9 @@ public abstract class Automation extends LinearOpMode {
 
         resetAngle();
 
-        pidDrive.reset();
-        pidDrive.setSetpoint(0);
-        pidDrive.setOutputRange(0, power);
-        pidDrive.setInputRange(-90, 90);
-        pidDrive.setEnable(true);
+        controlDrive.setPoint(0.0);
+        controlDrive.setTolerance(0.01);
+        controlDrive.setDeltaT(1);
 
         setBrakeMode(brake);
         if (opModeIsActive()) {
@@ -243,12 +235,12 @@ public abstract class Automation extends LinearOpMode {
 
             runtime.reset();
             do {
-                double correction = pidDrive.performPID(getAngle());
+                double correction = controlDrive.doPID(getAngle());
                 hardware.motor_frontLeft.setPower(frontLeft + correction);
                 hardware.motor_frontRight.setPower(frontRight + correction);
                 hardware.motor_rearLeft.setPower(rearLeft - correction);
                 hardware.motor_rearRight.setPower(rearRight - correction);
-                idle();
+                sleep((long) controlDrive.getDeltaT());
             } while (opModeIsActive() && runtime.seconds() < timeout && distance(start, hardware.imu.getPosition()) <= distance);
         }
 
