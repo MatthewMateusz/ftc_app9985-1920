@@ -13,8 +13,8 @@ public class PID {
 
     private double deltaT;
 
-    private double prevError;
-    private double prevIntegral;
+    private double prevError = 0;
+    private double prevIntegral = 0;
 
     public PID (double p, double i, double d) {
         P = p;
@@ -39,7 +39,7 @@ public class PID {
     }
 
     public double doPID(double input) {
-        double error = setpoint - input;
+        double error = input - setpoint;
         double integral = prevIntegral + error * deltaT;
         double derivative = (error - prevError) / deltaT;
 

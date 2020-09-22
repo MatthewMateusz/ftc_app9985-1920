@@ -54,8 +54,8 @@ public class Hardware {
 
         motor_frontLeft = setupMotor(hwMap,"motor_frontLeft", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
         motor_frontRight = setupMotor(hwMap,"motor_frontRight", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
-        motor_rearLeft = setupMotor(hwMap,"motor_rearLeft", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
-        motor_rearRight = setupMotor(hwMap,"motor_rearRight", Direction.FORWARD, ZeroPowerBehavior.BRAKE);
+        motor_rearLeft = setupMotor(hwMap,"motor_rearLeft", Direction.REVERSE, ZeroPowerBehavior.BRAKE);
+        motor_rearRight = setupMotor(hwMap,"motor_rearRight", Direction.REVERSE, ZeroPowerBehavior.BRAKE);
 
 
 

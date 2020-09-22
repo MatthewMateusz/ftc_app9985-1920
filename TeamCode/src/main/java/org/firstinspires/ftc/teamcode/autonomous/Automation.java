@@ -58,7 +58,7 @@ public abstract class Automation extends LinearOpMode {
     double globalAngle;
 
     //Drive straight stuff
-    PID controlRotate = new PID(0.003, 0.0003, 0);
+    PID controlRotate = new PID(0.01, 0, 0);
     PID controlDrive = new PID(0.05, 0, 0);
 
 
@@ -143,40 +143,38 @@ public abstract class Automation extends LinearOpMode {
     void rotate(double angle, double power, double timeout, boolean brake) {
         resetAngle();
 
-        if (Math.abs(angle) > 359) angle = (int) Math.copySign(359, angle);
+        //if (Math.abs(angle) > 359) angle = (int) Math.copySign(359, angle);
 
         controlRotate.setPoint(angle);
         controlRotate.setTolerance(0.01);
-        controlRotate.setDeltaT(1);
+        controlRotate.setDeltaT(5);
 
 
         setBrakeMode(brake);
         if (opModeIsActive()) {
             runtime.reset();
             if (angle < 0) {
-                while(opModeIsActive() && getAngle() == 0) {
-                    hardware.motor_frontLeft.setPower(power);
-                    hardware.motor_frontRight.setPower(power);
-                    hardware.motor_rearLeft.setPower(-power);
-                    hardware.motor_rearRight.setPower(-power);
-                    sleep((long) controlRotate.getDeltaT());
-                }
-
                 do {
-                    power = Range.clip(controlRotate.doPID(getAngle()), 0.0, 1.0);
+                    power = Range.clip(controlRotate.doPID(getAngle()), -1.0, 1.0) * power;
                     hardware.motor_frontLeft.setPower(power);
                     hardware.motor_frontRight.setPower(power);
                     hardware.motor_rearLeft.setPower(-power);
                     hardware.motor_rearRight.setPower(-power);
+                    telemetry.addData("TEst", power);
+                    telemetry.addData("TEst", getAngle());
+                    telemetry.update();
                     sleep((long) controlRotate.getDeltaT());
                 } while (opModeIsActive() && !controlRotate.atTarget(getAngle()) && runtime.seconds() < timeout);
             } else {
                 do {
-                    power = Range.clip(controlRotate.doPID(getAngle()), 0.0, 1.0);
+                    power = Range.clip(controlRotate.doPID(getAngle()), -1.0, 1.0) * power;
                     hardware.motor_frontLeft.setPower(-power);
                     hardware.motor_frontRight.setPower(-power);
                     hardware.motor_rearLeft.setPower(power);
                     hardware.motor_rearRight.setPower(power);
+                    telemetry.addData("TEst", power);
+                    telemetry.addData("TEst", getAngle());
+                    telemetry.update();
                     sleep((long) controlRotate.getDeltaT());
                 } while (opModeIsActive() && !controlRotate.atTarget(getAngle()) && runtime.seconds() < timeout);
             }
